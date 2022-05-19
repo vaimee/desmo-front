@@ -1,0 +1,13 @@
+.toolbar-spacer {
+  flex: 1 1 auto;
+}
+
+.content {
+    padding-bottom: 60px
+}
+
+.fixed-footer {
+  position: fixed;
+  z-index: 1000;
+  bottom: 0;
+}
