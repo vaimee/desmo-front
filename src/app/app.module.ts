@@ -14,9 +14,12 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { MatMenuModule } from '@angular/material/menu';
 import { DefaultComponent } from './layouts/default/default.component';
+import { StatisticsPageComponent } from './pages/statistics-page/statistics-page.component';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { QueryPageComponent } from './pages/query-page/query-page.component';
 
 @NgModule({
-  declarations: [AppComponent, TddManagerPageComponent, DefaultComponent],
+  declarations: [AppComponent, TddManagerPageComponent, DefaultComponent, StatisticsPageComponent, QueryPageComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -29,6 +32,7 @@ import { DefaultComponent } from './layouts/default/default.component';
     MatSidenavModule,
     MatListModule,
     MatMenuModule,
+    MatGridListModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
