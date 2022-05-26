@@ -17,6 +17,11 @@ import { DefaultComponent } from './layouts/default/default.component';
 import { StatisticsPageComponent } from './pages/statistics-page/statistics-page.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { QueryPageComponent } from './pages/query-page/query-page.component';
+import {MatInputModule} from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import {MatTableModule} from '@angular/material/table';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [AppComponent, TddManagerPageComponent, DefaultComponent, StatisticsPageComponent, QueryPageComponent],
@@ -33,6 +38,11 @@ import { QueryPageComponent } from './pages/query-page/query-page.component';
     MatListModule,
     MatMenuModule,
     MatGridListModule,
+    MatInputModule,
+    FormsModule,
+    MatTableModule,
+    MatCheckboxModule,
+    MatSnackBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
