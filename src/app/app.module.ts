@@ -22,9 +22,11 @@ import { FormsModule } from '@angular/forms';
 import {MatTableModule} from '@angular/material/table';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
+import {MatDialogModule} from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from './component-utils/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
-  declarations: [AppComponent, TddManagerPageComponent, DefaultComponent, StatisticsPageComponent, QueryPageComponent],
+  declarations: [AppComponent, TddManagerPageComponent, DefaultComponent, StatisticsPageComponent, QueryPageComponent, ConfirmationDialogComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -43,6 +45,7 @@ import {MatSnackBarModule} from '@angular/material/snack-bar';
     MatTableModule,
     MatCheckboxModule,
     MatSnackBarModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

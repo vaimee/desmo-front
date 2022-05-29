@@ -1,5 +1,5 @@
 
-<mat-card class="example-card">
+<mat-card class="sub-title">
   <mat-card-header>
       <mat-card-title>TDD Manager</mat-card-title>
       <mat-card-subtitle> 
@@ -8,19 +8,16 @@
   </mat-card-header>
 </mat-card>
 <div class="grid-container">
-  <mat-grid-list cols="2" rowHeight="300px">
-    <mat-grid-tile> 
-      <mat-form-field class="example-form-field" appearance="fill">
+  <mat-card>
+      <mat-form-field class="add_tdd" appearance="fill">
       <mat-label>Insert TDD's URL</mat-label>
       <input matInput type="url" [(ngModel)]="value">
       <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>
-    <button class="Register-button" mat-raised-button color="primary" (click)="openSnackBar('TDD has been registered', 'successful')">Register TDD</button>
-  </mat-grid-tile>    
-
-  </mat-grid-list>
+    <button class="Register-button" mat-raised-button color="primary" (click)="openDialog('New TDD added')">Add new TDD</button>
+  </mat-card>
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
     <!-- Checkbox Column -->
@@ -70,10 +67,9 @@
         (click)="selection.toggle(row)">
     </tr>
   </table>
-  <button class="Register-button" mat-raised-button color="primary" (click)="openSnackBar('TDD has been unregistered', 'successful')">Unregister TDD</button>
-  <button class="Register-button" mat-raised-button color="primary" (click)="openSnackBar('TDD has been activated', 'successful')">Activate</button>
-  <button class="Register-button" mat-raised-button color="primary" (click)="openSnackBar('TDD has been deactivated', 'successful')">Deactivate</button>
+  <button class="Register-button" mat-raised-button color="primary" (click)="openDialog('TDD has been unregistered')">Unregister TDD</button>
+  <button class="Register-button" mat-raised-button color="primary" (click)="openDialog('TDD has been activated')">Activate</button>
+  <button class="Register-button" mat-raised-button color="primary" (click)="openDialog('TDD has been deactivated')">Deactivate</button>
   
   
 </div>
-

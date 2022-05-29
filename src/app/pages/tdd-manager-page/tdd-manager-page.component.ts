@@ -4,6 +4,9 @@ import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
 import {MatTableDataSource} from '@angular/material/table';
 import {SelectionModel} from '@angular/cdk/collections';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmationDialogComponent } from '../../component-utils/confirmation-dialog/confirmation-dialog.component';
+
 
 
 export interface PeriodicElement {
@@ -34,13 +37,29 @@ const ELEMENT_DATA: PeriodicElement[] = [
 })
 
 export class TddManagerPageComponent {
-  constructor(private _snackBar: MatSnackBar) {}
+  constructor(
+    private _snackBar: MatSnackBar, 
+    public dialog: MatDialog
+    ) {}
   value = '';
   displayedColumns: string[] = ['select', 'position', 'address', 'url', 'state'];
   dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
   selection = new SelectionModel<PeriodicElement>(true, []);
+
+  openDialog(message:string) {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent,);
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.openSnackBar(message, 'Ok');
+      }
+    });
+  }
+
   openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action);
+    this._snackBar.open(message, action, {
+      duration: 1000
+    });
   }
     /** Whether the number of selected elements matches the total number of rows. */
     isAllSelected() {
@@ -67,3 +86,5 @@ export class TddManagerPageComponent {
       return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
     }
 }
+
+
