@@ -1,5 +1,14 @@
+import {
+  ITDDCreatedEvent,
+  ITDDDisabledEvent,
+  ITDDEnabledEvent,
+  ITDDRetrievalEvent,
+} from './desmo-hub.types';
+import { environment } from './../../../environments/environment';
 import { Injectable } from '@angular/core';
 import { ethers } from 'ethers';
+import { desmoHubABI } from './desmoHubABI';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -9,73 +18,142 @@ export class DesmoHubService {
   private signer: any;
   private contract: any;
   private contractWithSigner: any;
-  private readonly contractAddress: string = 'dai.tokens.ethers.eth';
 
-  private readonly desmoHubAbi: string[] = [
-    'function registerTDD(TDD memory tdd) external returns (uint256 index)',
-    'function unregisterTDD(uint256 index) external',
-    'function getNewRequestID() external returns (uint256)',
-    'function getTDDByRequestID(uint256 key) public view returns (string[] memory)',
-    "event Registered(address owner, uint256 index, string url)",
-    "event Unregistered(uint256 index, string url)"
-  ];
+  private TDD_CREATED: Subject<ITDDCreatedEvent>;
+  tddCreated$: Observable<ITDDCreatedEvent>;
 
-  constructor() {}
+  private TDD_DISABLED: Subject<ITDDDisabledEvent>;
+  tddDisabled$: Observable<ITDDDisabledEvent>;
+
+  private TDD_ENABLED: Subject<ITDDEnabledEvent>;
+  tddEnabled$: Observable<ITDDEnabledEvent>;
+
+  private TDD_RETRIEVAL: Subject<ITDDRetrievalEvent>;
+  tddRetrieval$: Observable<ITDDRetrievalEvent>;
+
+  constructor() {
+    this.TDD_CREATED = new Subject<ITDDCreatedEvent>();
+    this.tddCreated$ = this.TDD_CREATED.asObservable();
+
+    this.TDD_DISABLED = new Subject<ITDDDisabledEvent>();
+    this.tddDisabled$ = this.TDD_DISABLED.asObservable();
+
+    this.TDD_ENABLED = new Subject<ITDDEnabledEvent>();
+    this.tddEnabled$ = this.TDD_ENABLED.asObservable();
+
+    this.TDD_RETRIEVAL = new Subject<ITDDRetrievalEvent>();
+    this.tddRetrieval$ = this.TDD_RETRIEVAL.asObservable();
+  }
 
   public async connect() {
-    // A Web3Provider wraps a standard Web3 provider, which is
-    // what MetaMask injects as window.ethereum into each page
     // @ts-ignore
-    this.provider = new ethers.providers.Web3Provider(window.ethereum);
-
+    this.provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
     // MetaMask requires requesting permission to connect users accounts
     await this.provider.send('eth_requestAccounts', []);
-
     // The MetaMask plugin also allows signing transactions to
     // send ether and pay to change state within the blockchain.
     // For this, you need the account signer...
     this.signer = this.provider.getSigner();
 
-    // The Contract object
+    // ANOTHER OPTION:
+    // this.provider = new ethers.providers.JsonRpcProvider(`https://rinkeby.infura.io/v3/${environment.infuraProjectId}`)
+    // this.signer = new ethers.Wallet(privateKey, this.provider); // Can be used as a signer
+
+    // Readonly contract
     this.contract = new ethers.Contract(
-      this.contractAddress,
-      this.desmoHubAbi,
+      environment.desmoHubAddress,
+      desmoHubABI,
       this.provider
     );
+    // Read-write contract
     this.contractWithSigner = this.contract.connect(this.signer);
+
+    const ownerAddress = await this.signer.getAddress();
+
+    const filterCreated = this.contract.filters.TDDCreated(ownerAddress);
+    this.provider.on(filterCreated, (event: any) => {
+      console.log("CREATED", event);
+      this.TDD_CREATED.next({ key: event.topics[1], url: event.topics[2] });
+    });
+
+    const filterDisabled = this.contract.filters.TDDDisabled(ownerAddress);
+    this.provider.on(filterDisabled, (event: any) => {
+      console.log("DISABLED", event);
+      this.TDD_DISABLED.next({ key: event.topics[1], url: event.topics[2] });
+    });
+
+    const filterEnabled = this.contract.filters.TDDEnabled(ownerAddress);
+    this.provider.on(filterEnabled, (event: any) => {
+      console.log("ENABLED", event);
+      this.TDD_ENABLED.next({ key: event.topics[1], url: event.topics[2] });
+    });
+
+    const filterRetrieval = this.contract.filters.TDDRetrieval(
+      null,
+      ownerAddress
+    );
+    this.provider.on(filterRetrieval, (event: any) => {
+      console.log("RETRIEVAL", event);
+      this.TDD_RETRIEVAL.next({
+        url: event.topics[1],
+        owner: event.topics[2],
+        disabled:
+          event.topics[3] ==
+          '0x0000000000000000000000000000000000000000000000000000000000000001',
+      });
+    });
+  }
+
+  private doSomething() {
+    // const filterCreated = this.contract.filters.TDDCreated();
+    // const eventsCreated = await this.contract.queryFilter(filterCreated, -100000, "latest");
+    // console.log(eventsCreated)
+    // for(const e of eventsCreated) {
+    //     if(e?.args?.key == ownerAddress) {
+    //       console.log("CREATED Key found")
+    //     }
+    // }
+    // const filterDisabled = this.contract.filters.TDDDisabled();
+    // const eventsDisabled = await this.contract.queryFilter(filterDisabled, -100000, "latest");
+    // console.log(eventsDisabled)
+    // for(const e of eventsDisabled) {
+    //   if(e?.args?.key == ownerAddress) {
+    //     console.log("DISABLED Key found")
+    //   }
+    // }
   }
 
   public async registerTDD(tddUrl: string): Promise<void> {
     if (this.contractWithSigner) {
-      // A filter for when a specific address receives tokens
-      const ownerAddress = "0x8ba1f109551bD432803012645Ac136ddd64DBA72";
-      const filter = this.contract.filters.Registered(ownerAddress, null, null)
+      const ownerAddress = await this.signer.getAddress();
 
-      // Receive an event when that filter occurs
-      this.contract.on(filter, (owner: any, index: any, url: any, event: any) => {
-          console.log(`A TDD was registered! Owner: ${ owner } Url: ${ url }.`);
-      });
-
-      const tx = await this.contractWithSigner.registerTDD({
-        url: 'https://the.best.tdds.in.the.world.com/tdd42',
+      await this.contractWithSigner.registerTDD({
+        url: tddUrl,
         owner: ownerAddress,
+        disabled: false,
       });
     }
   }
 
-  public async unregisterTDD(index: string): Promise<void> {
+  public async disableTDD(): Promise<void> {
     if (this.contractWithSigner) {
-      // A filter for when a specific address receives tokens
-      const index = "0x8ba1f109551bD432803012645Ac136ddd64DBA72";
-      const filter = this.contract.filters.Unregistered(index, null)
-
-      // Receive an event when that filter occurs
-      this.contract.on(filter, (index: any, url: any, event: any) => {
-          console.log(`A TDD was unregistered! Index: ${ index } Url: ${ url }.`);
-      });
-
-      const tx = await this.contractWithSigner.unregisterTDD(index);
+      await this.contractWithSigner.disableTDD();
     }
   }
 
+  public async enableTDD(): Promise<void> {
+    if (this.contractWithSigner) {
+      await this.contractWithSigner.enableTDD();
+    }
+  }
+
+  public async getTDD(): Promise<void> {
+    if (this.contractWithSigner) {
+      await this.contractWithSigner.getTDD();
+    }
+  }
+
+  ngOnDestroy() {
+    this.provider.removeAllListeners();
+  }
 }

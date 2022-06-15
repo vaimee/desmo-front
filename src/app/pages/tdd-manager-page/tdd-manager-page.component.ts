@@ -1,90 +1,175 @@
-import { Component } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
-import {MatTableDataSource} from '@angular/material/table';
-import {SelectionModel} from '@angular/cdk/collections';
+import { DesmoHubService } from './../../services/desmo-hub/desmo-hub.service';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmationDialogComponent } from '../../component-utils/confirmation-dialog/confirmation-dialog.component';
+import { Subscription } from 'rxjs';
 
-
-
-export interface PeriodicElement {
+export interface TDD {
   address: string;
-  position: number;
   url: string;
-  state: string;
-  
+  state: boolean;
 }
-
-const ELEMENT_DATA: PeriodicElement[] = [
-  {position: 1, address: '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5', url: 'www.example_tdd_1.com', state: 'On'},
-  {position: 2, address: '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5', url: 'www.example_tdd_1.com', state: 'Off'},
-  {position: 3, address: '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5', url: 'www.example_tdd_1.com', state: 'On'},
-  {position: 4, address: '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5', url: 'www.example_tdd_1.com', state: 'Off'},
-  {position: 5, address: '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5', url: 'www.example_tdd_1.com', state: 'On'},
-  {position: 6, address: '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5', url: 'www.example_tdd_1.com', state: 'Off'},
-  {position: 7, address: '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5', url: 'www.example_tdd_1.com', state: 'Off'},
-  {position: 8, address: '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5', url: 'www.example_tdd_1.com', state: 'Off'},
-  {position: 9, address: '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5', url: 'www.example_tdd_1.com', state: 'On'},
-  {position: 10, address: '3FZbgi29cpjq2GjdwV8eyHuJJnkLtktZc5', url: 'www.example_tdd_1.com', state: 'On'},
-];
 
 @Component({
   selector: 'app-tdd-manager-page',
   templateUrl: './tdd-manager-page.component.html',
-  styleUrls: ['./tdd-manager-page.component.css']
+  styleUrls: ['./tdd-manager-page.component.css'],
 })
+export class TddManagerPageComponent implements OnInit, OnDestroy {
+  tddUrl = '';
+  displayedColumns: string[] = ['address', 'url', 'state'];
+  tableData: TDD[] = [];
+  dataSource = new MatTableDataSource<TDD>([]);
 
-export class TddManagerPageComponent {
+  tddRetrieved: boolean = false;
+  tddEnabled: boolean = true;
+  private subscriptions: Subscription = new Subscription();
+
   constructor(
-    private _snackBar: MatSnackBar, 
-    public dialog: MatDialog
-    ) {}
-  value = '';
-  displayedColumns: string[] = ['select', 'position', 'address', 'url', 'state'];
-  dataSource = new MatTableDataSource<PeriodicElement>(ELEMENT_DATA);
-  selection = new SelectionModel<PeriodicElement>(true, []);
+    private _snackBar: MatSnackBar,
+    public dialog: MatDialog,
+    private desmoHub: DesmoHubService
+  ) {}
 
-  openDialog(message:string) {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent,);
+  ngOnInit(): void {
+    // tddCreated subscription
+    this.subscriptions.add(
+      this.desmoHub.tddCreated$.subscribe((event) => {
+        this.tableData.push({
+          address: event.key,
+          url: event.url,
+          state: true,
+        });
+        this.dataSource = new MatTableDataSource(this.tableData);
+        this.tddRetrieved = true;
+        this.tddEnabled = true;
+        this.openSnackBar('A new TDD was created!', 'Ok');
+      })
+    );
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.openSnackBar(message, 'Ok');
-      }
-    });
+    // tddDisabled subscription
+    this.subscriptions.add(
+      this.desmoHub.tddDisabled$.subscribe((event) => {
+        const rowIndex: number = this.tableData.findIndex(
+          (tdd: TDD) => tdd.address === event.key && tdd.url === event.url
+        );
+        if (rowIndex >= 0) {
+          this.tableData[rowIndex].state = false;
+        } else {
+          this.tableData.push({
+            address: event.key,
+            url: event.url,
+            state: false,
+          });
+        }
+        this.dataSource = new MatTableDataSource(this.tableData);
+        this.tddRetrieved = true;
+        this.tddEnabled = false;
+        this.openSnackBar('A TDD was disabled!', 'Ok');
+      })
+    );
+
+    // tddEnabled subscription
+    this.subscriptions.add(
+      this.desmoHub.tddEnabled$.subscribe((event) => {
+        const rowIndex: number = this.tableData.findIndex(
+          (tdd: TDD) => tdd.address === event.key && tdd.url === event.url
+        );
+        if (rowIndex >= 0) {
+          this.tableData[rowIndex].state = true;
+        } else {
+          this.tableData.push({
+            address: event.key,
+            url: event.url,
+            state: true,
+          });
+        }
+        this.dataSource = new MatTableDataSource(this.tableData);
+        this.tddRetrieved = true;
+        this.tddEnabled = true;
+        this.openSnackBar('A TDD was enabled!', 'Ok');
+      })
+    );
+
+    // tddRetrieval subscription
+    this.subscriptions.add(
+      this.desmoHub.tddRetrieval$.subscribe((event) => {
+        const rowIndex: number = this.tableData.findIndex(
+          (tdd: TDD) => tdd.address === event.owner && tdd.url === event.url
+        );
+        if (rowIndex >= 0) {
+          this.tableData[rowIndex].state = !event.disabled;
+        } else {
+          this.tableData.push({
+            address: event.owner,
+            url: event.url,
+            state: !event.disabled,
+          });
+        }
+        this.dataSource = new MatTableDataSource(this.tableData);
+        this.tddRetrieved = true;
+        this.tddEnabled = !event.disabled;
+        this.openSnackBar('A TDD was retrieved!', 'Ok');
+      })
+    );
+
+    // This must be done at the end:
+    this.desmoHub.connect();
   }
 
-  openSnackBar(message: string, action: string) {
+  private openSnackBar(message: string, action: string) {
     this._snackBar.open(message, action, {
-      duration: 1000
+      duration: 3000,
     });
   }
-    /** Whether the number of selected elements matches the total number of rows. */
-    isAllSelected() {
-      const numSelected = this.selection.selected.length;
-      const numRows = this.dataSource.data.length;
-      return numSelected === numRows;
-    }
-  
-    /** Selects all rows if they are not all selected; otherwise clear selection. */
-    masterToggle() {
-      if (this.isAllSelected()) {
-        this.selection.clear();
-        return;
+
+  registerTDD() {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result) {
+        await this.desmoHub.registerTDD(this.tddUrl);
+        this.openSnackBar('The transaction was successfully sent!', 'Ok');
       }
-  
-      this.selection.select(...this.dataSource.data);
-    }
-  
-    /** The label for the checkbox on the passed row */
-    checkboxLabel(row?: PeriodicElement): string {
-      if (!row) {
-        return `${this.isAllSelected() ? 'deselect' : 'select'} all`;
+    });
+  }
+
+  disableTDD() {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result) {
+        await this.desmoHub.disableTDD();
+        this.openSnackBar('The transaction was successfully sent!', 'Ok');
       }
-      return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.position + 1}`;
-    }
+    });
+  }
+
+  enableTDD() {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result) {
+        await this.desmoHub.enableTDD();
+        this.openSnackBar('The transaction was successfully sent!', 'Ok');
+      }
+    });
+  }
+
+  getTDD() {
+    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+
+    dialogRef.afterClosed().subscribe(async (result) => {
+      if (result) {
+        await this.desmoHub.getTDD();
+        this.openSnackBar('The transaction was successfully sent!', 'Ok');
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 }
-
-

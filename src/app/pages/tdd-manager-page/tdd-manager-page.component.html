@@ -11,65 +11,40 @@
   <mat-card>
       <mat-form-field class="add_tdd" appearance="fill">
       <mat-label>Insert TDD's URL</mat-label>
-      <input matInput type="url" [(ngModel)]="value">
-      <button *ngIf="value" matSuffix mat-icon-button aria-label="Clear" (click)="value=''">
+      <input matInput type="url" [(ngModel)]="tddUrl">
+      <button *ngIf="tddUrl" matSuffix mat-icon-button aria-label="Clear" (click)="tddUrl=''">
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>
-    <button class="Register-button" mat-raised-button color="primary" (click)="openDialog('New TDD added')">Add new TDD</button>
+    <button class="Register-button" mat-raised-button color="primary" (click)="registerTDD()" [disabled]="!tddUrl">Register TDD</button>
   </mat-card>
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
-
-    <!-- Checkbox Column -->
-    <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef>
-        <mat-checkbox (change)="$event ? masterToggle() : null"
-                      [checked]="selection.hasValue() && isAllSelected()"
-                      [indeterminate]="selection.hasValue() && !isAllSelected()"
-                      [aria-label]="checkboxLabel()">
-        </mat-checkbox>
-      </th>
-      <td mat-cell *matCellDef="let row">
-        <mat-checkbox (click)="$event.stopPropagation()"
-                      (change)="$event ? selection.toggle(row) : null"
-                      [checked]="selection.isSelected(row)"
-                      [aria-label]="checkboxLabel(row)">
-        </mat-checkbox>
-      </td>
-    </ng-container>
   
-    <!-- Position Column -->
-    <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef> No. </th>
-      <td mat-cell *matCellDef="let element"> {{element.position}} </td>
-    </ng-container>
-  
-    <!-- Name Column -->
+    <!-- Address Column -->
     <ng-container matColumnDef="address">
       <th mat-header-cell *matHeaderCellDef> Address </th>
       <td mat-cell *matCellDef="let element"> {{element.address}} </td>
     </ng-container>
   
-    <!-- Weight Column -->
+    <!-- Url Column -->
     <ng-container matColumnDef="url">
       <th mat-header-cell *matHeaderCellDef> URL </th>
       <td mat-cell *matCellDef="let element"> {{element.url}} </td>
     </ng-container>
   
-    <!-- Symbol Column -->
+    <!-- State Column -->
     <ng-container matColumnDef="state">
       <th mat-header-cell *matHeaderCellDef> State </th>
-      <td mat-cell *matCellDef="let element"> {{element.state}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.state ? 'ENABLED' : 'DISABLED'}} </td>
     </ng-container>
   
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-        (click)="selection.toggle(row)">
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;">
     </tr>
   </table>
-  <button class="Register-button" mat-raised-button color="primary" (click)="openDialog('TDD has been unregistered')">Unregister TDD</button>
-  <button class="Register-button" mat-raised-button color="primary" (click)="openDialog('TDD has been activated')">Activate</button>
-  <button class="Register-button" mat-raised-button color="primary" (click)="openDialog('TDD has been deactivated')">Deactivate</button>
+  <button class="Register-button" mat-raised-button color="primary" (click)="disableTDD()" [disabled]="!tddRetrieved || !tddEnabled">Disable TDD</button>
+  <button class="Register-button" mat-raised-button color="primary" (click)="enableTDD()" [disabled]="!tddRetrieved || tddEnabled">Enable TDD</button>
+  <button class="Register-button" mat-raised-button color="primary" (click)="getTDD()">Get TDD</button>
   
   
 </div>
