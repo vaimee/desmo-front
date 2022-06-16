@@ -7,6 +7,7 @@
       </mat-card-subtitle>
   </mat-card-header>
 </mat-card>
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
 <div class="grid-container">
   <mat-card>
       <mat-form-field class="add_tdd" appearance="fill">
@@ -16,7 +17,7 @@
         <mat-icon>close</mat-icon>
       </button>
     </mat-form-field>
-    <button class="Register-button" mat-raised-button color="primary" (click)="registerTDD()" [disabled]="!tddUrl">Register TDD</button>
+    <button class="Register-button" mat-raised-button color="primary" (click)="registerTDD()" [disabled]="!tddUrl || loading">Register TDD</button>
   </mat-card>
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
   
@@ -42,9 +43,9 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;">
     </tr>
   </table>
-  <button class="Register-button" mat-raised-button color="primary" (click)="disableTDD()" [disabled]="!tddRetrieved || !tddEnabled">Disable TDD</button>
-  <button class="Register-button" mat-raised-button color="primary" (click)="enableTDD()" [disabled]="!tddRetrieved || tddEnabled">Enable TDD</button>
-  <button class="Register-button" mat-raised-button color="primary" (click)="getTDD()">Get TDD</button>
+  <button class="Register-button" mat-raised-button color="primary" (click)="disableTDD()" [disabled]="!tddRetrieved || !tddEnabled || loading">Disable TDD</button>
+  <button class="Register-button" mat-raised-button color="primary" (click)="enableTDD()" [disabled]="!tddRetrieved || tddEnabled || loading">Enable TDD</button>
+  <button class="Register-button" mat-raised-button color="primary" (click)="getTDD()" [disabled]="loading">Get TDD</button>
   
   
 </div>

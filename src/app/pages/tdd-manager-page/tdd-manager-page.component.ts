@@ -25,6 +25,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
 
   tddRetrieved: boolean = false;
   tddEnabled: boolean = true;
+  loading: boolean = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -45,6 +46,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
         this.dataSource = new MatTableDataSource(this.tableData);
         this.tddRetrieved = true;
         this.tddEnabled = true;
+        this.loading = false;
         this.openSnackBar('A new TDD was created!', 'Ok');
       })
     );
@@ -67,6 +69,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
         this.dataSource = new MatTableDataSource(this.tableData);
         this.tddRetrieved = true;
         this.tddEnabled = false;
+        this.loading = false;
         this.openSnackBar('A TDD was disabled!', 'Ok');
       })
     );
@@ -89,6 +92,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
         this.dataSource = new MatTableDataSource(this.tableData);
         this.tddRetrieved = true;
         this.tddEnabled = true;
+        this.loading = false;
         this.openSnackBar('A TDD was enabled!', 'Ok');
       })
     );
@@ -111,6 +115,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
         this.dataSource = new MatTableDataSource(this.tableData);
         this.tddRetrieved = true;
         this.tddEnabled = !event.disabled;
+        this.loading = false;
         this.openSnackBar('A TDD was retrieved!', 'Ok');
       })
     );
@@ -132,6 +137,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
       if (result) {
         await this.desmoHub.registerTDD(this.tddUrl);
         this.openSnackBar('The transaction was successfully sent!', 'Ok');
+        this.loading = true;
       }
     });
   }
@@ -143,6 +149,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
       if (result) {
         await this.desmoHub.disableTDD();
         this.openSnackBar('The transaction was successfully sent!', 'Ok');
+        this.loading = true;
       }
     });
   }
@@ -154,6 +161,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
       if (result) {
         await this.desmoHub.enableTDD();
         this.openSnackBar('The transaction was successfully sent!', 'Ok');
+        this.loading = true;
       }
     });
   }
@@ -165,6 +173,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
       if (result) {
         await this.desmoHub.getTDD();
         this.openSnackBar('The transaction was successfully sent!', 'Ok');
+        this.loading = true;
       }
     });
   }
