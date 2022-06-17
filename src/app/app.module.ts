@@ -23,6 +23,7 @@ import {MatTableModule} from '@angular/material/table';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatDialogModule} from '@angular/material/dialog';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { ConfirmationDialogComponent } from './component-utils/confirmation-dialog/confirmation-dialog.component';
 
 @NgModule({
@@ -46,6 +47,7 @@ import { ConfirmationDialogComponent } from './component-utils/confirmation-dial
     MatCheckboxModule,
     MatSnackBarModule,
     MatDialogModule,
+    MatProgressBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
