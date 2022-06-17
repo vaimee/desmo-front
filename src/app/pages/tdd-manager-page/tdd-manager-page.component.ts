@@ -38,14 +38,21 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
     // tddCreated subscription
     this.subscriptions.add(
       this.desmoHub.tddCreated$.subscribe((event) => {
-        this.tableData.push({
-          address: event.key,
-          url: event.url,
-          state: true,
-        });
+        const rowIndex: number = this.tableData.findIndex((tdd: TDD) => tdd.address === event.key);
+        if (rowIndex >= 0) {
+          this.tableData[rowIndex].url = event.url;
+          this.tableData[rowIndex].state = !event.disabled;
+        } else {
+          this.tableData.push({
+            address: event.key,
+            url: event.url,
+            state: !event.disabled,
+          });
+        }
+
         this.dataSource = new MatTableDataSource(this.tableData);
         this.tddRetrieved = true;
-        this.tddEnabled = true;
+        this.tddEnabled = !event.disabled;
         this.loading = false;
         this.openSnackBar('A new TDD was created!', 'Ok');
       })
@@ -55,7 +62,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.desmoHub.tddDisabled$.subscribe((event) => {
         const rowIndex: number = this.tableData.findIndex(
-          (tdd: TDD) => tdd.address === event.key && tdd.url === event.url
+          (tdd: TDD) => tdd.address === event.key
         );
         if (rowIndex >= 0) {
           this.tableData[rowIndex].state = false;
@@ -78,7 +85,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.desmoHub.tddEnabled$.subscribe((event) => {
         const rowIndex: number = this.tableData.findIndex(
-          (tdd: TDD) => tdd.address === event.key && tdd.url === event.url
+          (tdd: TDD) => tdd.address === event.key
         );
         if (rowIndex >= 0) {
           this.tableData[rowIndex].state = true;
@@ -101,13 +108,14 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.desmoHub.tddRetrieval$.subscribe((event) => {
         const rowIndex: number = this.tableData.findIndex(
-          (tdd: TDD) => tdd.address === event.owner && tdd.url === event.url
+          (tdd: TDD) => tdd.address === event.key
         );
         if (rowIndex >= 0) {
+          this.tableData[rowIndex].url = event.url;
           this.tableData[rowIndex].state = !event.disabled;
         } else {
           this.tableData.push({
-            address: event.owner,
+            address: event.key,
             url: event.url,
             state: !event.disabled,
           });

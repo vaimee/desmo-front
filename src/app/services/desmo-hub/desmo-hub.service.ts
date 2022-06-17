@@ -18,6 +18,7 @@ export class DesmoHubService {
   private signer: any;
   private contract: any;
   private contractWithSigner: any;
+  private abiInterface: any;
 
   private TDD_CREATED: Subject<ITDDCreatedEvent>;
   tddCreated$: Observable<ITDDCreatedEvent>;
@@ -59,6 +60,7 @@ export class DesmoHubService {
     // this.provider = new ethers.providers.JsonRpcProvider(`https://rinkeby.infura.io/v3/${environment.infuraProjectId}`)
     // this.signer = new ethers.Wallet(privateKey, this.provider); // Can be used as a signer
 
+    this.abiInterface = new ethers.utils.Interface(desmoHubABI);
     // Readonly contract
     this.contract = new ethers.Contract(
       environment.desmoHubAddress,
@@ -72,34 +74,37 @@ export class DesmoHubService {
 
     const filterCreated = this.contract.filters.TDDCreated(ownerAddress);
     this.provider.on(filterCreated, (event: any) => {
-      console.log("CREATED", event);
-      this.TDD_CREATED.next({ key: event.topics[1], url: event.topics[2] });
+      const parsedEvent = this.abiInterface.parseLog(event);
+      console.log('TDDCreated', parsedEvent);
+      this.TDD_CREATED.next({
+        key: parsedEvent.args.key,
+        url: parsedEvent.args.url,
+        disabled: parsedEvent.args.disabled,
+      });
     });
 
     const filterDisabled = this.contract.filters.TDDDisabled(ownerAddress);
     this.provider.on(filterDisabled, (event: any) => {
-      console.log("DISABLED", event);
-      this.TDD_DISABLED.next({ key: event.topics[1], url: event.topics[2] });
+      const parsedEvent = this.abiInterface.parseLog(event);
+      console.log('TDDDisabled', parsedEvent);
+      this.TDD_DISABLED.next({ key: parsedEvent.args.key, url: parsedEvent.args.url });
     });
 
     const filterEnabled = this.contract.filters.TDDEnabled(ownerAddress);
     this.provider.on(filterEnabled, (event: any) => {
-      console.log("ENABLED", event);
-      this.TDD_ENABLED.next({ key: event.topics[1], url: event.topics[2] });
+      const parsedEvent = this.abiInterface.parseLog(event);
+      console.log('TDDEnabled', parsedEvent);
+      this.TDD_ENABLED.next({ key: parsedEvent.args.key, url: parsedEvent.args.url });
     });
 
-    const filterRetrieval = this.contract.filters.TDDRetrieval(
-      null,
-      ownerAddress
-    );
+    const filterRetrieval = this.contract.filters.TDDRetrieval(ownerAddress);
     this.provider.on(filterRetrieval, (event: any) => {
-      console.log("RETRIEVAL", event);
+      const parsedEvent = this.abiInterface.parseLog(event);
+      console.log('TDDRetrieval', parsedEvent);
       this.TDD_RETRIEVAL.next({
-        url: event.topics[1],
-        owner: event.topics[2],
-        disabled:
-          event.topics[3] ==
-          '0x0000000000000000000000000000000000000000000000000000000000000001',
+        key: parsedEvent.args.key,
+        url: parsedEvent.args.url,
+        disabled: parsedEvent.args.disabled,
       });
     });
   }

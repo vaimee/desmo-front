@@ -14,7 +14,7 @@ export const desmoHubABI = [
         type: 'address',
       },
       {
-        indexed: true,
+        indexed: false,
         internalType: 'string',
         name: 'url',
         type: 'string',
@@ -33,7 +33,7 @@ export const desmoHubABI = [
         type: 'address',
       },
       {
-        indexed: true,
+        indexed: false,
         internalType: 'string',
         name: 'url',
         type: 'string',
@@ -52,7 +52,7 @@ export const desmoHubABI = [
         type: 'address',
       },
       {
-        indexed: true,
+        indexed: false,
         internalType: 'string',
         name: 'url',
         type: 'string',
@@ -66,18 +66,18 @@ export const desmoHubABI = [
     inputs: [
       {
         indexed: true,
+        internalType: 'address',
+        name: 'key',
+        type: 'address',
+      },
+      {
+        indexed: false,
         internalType: 'string',
         name: 'url',
         type: 'string',
       },
       {
-        indexed: true,
-        internalType: 'address',
-        name: 'owner',
-        type: 'address',
-      },
-      {
-        indexed: true,
+        indexed: false,
         internalType: 'bool',
         name: 'disabled',
         type: 'bool',
