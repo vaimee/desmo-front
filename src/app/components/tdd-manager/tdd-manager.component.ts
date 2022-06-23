@@ -18,10 +18,11 @@ export interface TDD {
   styleUrls: ['./tdd-manager.component.css'],
 })
 export class TddManagerComponent implements OnInit, OnDestroy {
+  private readonly CACHE_KEY: string = 'tddList';
   tddUrl = '';
   displayedColumns: string[] = ['address', 'url', 'state'];
-  tableData: TDD[] = [];
-  dataSource: any = new MatTableDataSource<TDD>([]);
+  tableData: TDD[];
+  dataSource: MatTableDataSource<TDD>;
 
   tddRetrieved: boolean = false;
   tddEnabled: boolean = true;
@@ -32,7 +33,12 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     private snackBar: MatSnackBar,
     public dialog: MatDialog,
     private desmoHub: DesmoHubService
-  ) {}
+  ) {
+    // Check the cache for pre-existing data or initialise with an empty list:
+    const tddList: string = localStorage.getItem(this.CACHE_KEY) ?? '[]';
+    this.tableData = JSON.parse(tddList) as TDD[];
+    this.dataSource = new MatTableDataSource<TDD>(this.tableData);
+  }
 
   ngOnInit(): void {
     // tddCreated subscription
@@ -51,7 +57,11 @@ export class TddManagerComponent implements OnInit, OnDestroy {
             state: !event.disabled,
           });
         }
-        this.dataSource = new MatTableDataSource(this.tableData);
+
+        // Save new data inside the cache:
+        localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
+
+        this.dataSource = new MatTableDataSource<TDD>(this.tableData);
         this.tddRetrieved = true;
         this.tddEnabled = !event.disabled;
         this.loading = false;
@@ -74,7 +84,11 @@ export class TddManagerComponent implements OnInit, OnDestroy {
             state: false,
           });
         }
-        this.dataSource = new MatTableDataSource(this.tableData);
+
+        // Save new data inside the cache:
+        localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
+
+        this.dataSource = new MatTableDataSource<TDD>(this.tableData);
         this.tddRetrieved = true;
         this.tddEnabled = false;
         this.loading = false;
@@ -97,7 +111,11 @@ export class TddManagerComponent implements OnInit, OnDestroy {
             state: true,
           });
         }
-        this.dataSource = new MatTableDataSource(this.tableData);
+
+        // Save new data inside the cache:
+        localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
+
+        this.dataSource = new MatTableDataSource<TDD>(this.tableData);
         this.tddRetrieved = true;
         this.tddEnabled = true;
         this.loading = false;
@@ -121,7 +139,11 @@ export class TddManagerComponent implements OnInit, OnDestroy {
             state: !event.disabled,
           });
         }
-        this.dataSource = new MatTableDataSource(this.tableData);
+        
+        // Save new data inside the cache:
+        localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
+
+        this.dataSource = new MatTableDataSource<TDD>(this.tableData);
         this.tddRetrieved = true;
         this.tddEnabled = !event.disabled;
         this.loading = false;
