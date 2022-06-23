@@ -3,6 +3,7 @@ import {
   ITDDDisabledEvent,
   ITDDEnabledEvent,
   ITDDRetrievalEvent,
+  ITransactionSent,
 } from './desmo-hub.types';
 import { environment } from './../../../environments/environment';
 import { Injectable } from '@angular/core';
@@ -32,6 +33,9 @@ export class DesmoHubService {
   private TDD_RETRIEVAL: Subject<ITDDRetrievalEvent>;
   tddRetrieval$: Observable<ITDDRetrievalEvent>;
 
+  private TRANSACTION_SENT: Subject<ITransactionSent>;
+  transactionSent$: Observable<ITransactionSent>;
+
   constructor() {
     this.TDD_CREATED = new Subject<ITDDCreatedEvent>();
     this.tddCreated$ = this.TDD_CREATED.asObservable();
@@ -44,6 +48,9 @@ export class DesmoHubService {
 
     this.TDD_RETRIEVAL = new Subject<ITDDRetrievalEvent>();
     this.tddRetrieval$ = this.TDD_RETRIEVAL.asObservable();
+
+    this.TRANSACTION_SENT = new Subject<ITransactionSent>();
+    this.transactionSent$ = this.TRANSACTION_SENT.asObservable();
   }
 
   public async connect() {
@@ -146,29 +153,64 @@ export class DesmoHubService {
     if (this.contractWithSigner) {
       const ownerAddress = await this.signer.getAddress();
 
-      await this.contractWithSigner.registerTDD({
+      const tx = await this.contractWithSigner.registerTDD({
         url: tddUrl,
         owner: ownerAddress,
         disabled: false,
       });
+      this.TRANSACTION_SENT.next({
+        invokedOperation: 'Register TDD',
+        hash: tx.hash,
+        sent: new Date(Date.now()),
+      });
+    } else {
+      throw new Error('[registerTDD] this operation requires a signer!');
     }
   }
 
   public async disableTDD(): Promise<void> {
     if (this.contractWithSigner) {
-      await this.contractWithSigner.disableTDD();
+      const tx = await this.contractWithSigner.disableTDD();
+      this.TRANSACTION_SENT.next({
+        invokedOperation: 'Disable TDD',
+        hash: tx.hash,
+        sent: new Date(Date.now()),
+      });
+    } else {
+      throw new Error('[disableTDD] this operation requires a signer!');
     }
   }
 
   public async enableTDD(): Promise<void> {
     if (this.contractWithSigner) {
-      await this.contractWithSigner.enableTDD();
+      const tx = await this.contractWithSigner.enableTDD();
+      this.TRANSACTION_SENT.next({
+        invokedOperation: 'Enable TDD',
+        hash: tx.hash,
+        sent: new Date(Date.now()),
+      });
+    } else {
+      throw new Error('[enableTDD] this operation requires a signer!');
     }
   }
 
   public async getTDD(): Promise<void> {
     if (this.contractWithSigner) {
-      await this.contractWithSigner.getTDD();
+      const tx = await this.contractWithSigner.getTDD();
+      this.TRANSACTION_SENT.next({
+        invokedOperation: 'Get TDD',
+        hash: tx.hash,
+        sent: new Date(Date.now()),
+      });
+    } else if (this.contract) {
+      const tx = await this.contract.getTDD();
+      this.TRANSACTION_SENT.next({
+        invokedOperation: 'Get TDD',
+        hash: tx.hash,
+        sent: new Date(Date.now()),
+      });
+    } else {
+      throw new Error('[getTDD] this operation requires a contract!');
     }
   }
 

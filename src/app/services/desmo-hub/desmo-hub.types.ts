@@ -19,3 +19,10 @@ export interface ITDDRetrievalEvent {
   url: string;
   disabled: boolean;
 }
+
+export interface ITransactionSent {
+  invokedOperation: 'Register TDD' | 'Disable TDD' | 'Enable TDD' | 'Get TDD';
+  hash: string;
+  sent: Date;
+  confirmed?: Date;
+}
