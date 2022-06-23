@@ -17,17 +17,26 @@ import { DefaultComponent } from './layouts/default/default.component';
 import { StatisticsPageComponent } from './pages/statistics-page/statistics-page.component';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { QueryPageComponent } from './pages/query-page/query-page.component';
-import {MatInputModule} from '@angular/material/input';
+import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import {MatTableModule} from '@angular/material/table';
-import {MatCheckboxModule} from '@angular/material/checkbox';
-import {MatSnackBarModule} from '@angular/material/snack-bar';
-import {MatDialogModule} from '@angular/material/dialog';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { MatTableModule } from '@angular/material/table';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ConfirmationDialogComponent } from './component-utils/confirmation-dialog/confirmation-dialog.component';
+import { TddManagerComponent } from './components/tdd-manager/tdd-manager.component';
 
 @NgModule({
-  declarations: [AppComponent, TddManagerPageComponent, DefaultComponent, StatisticsPageComponent, QueryPageComponent, ConfirmationDialogComponent],
+  declarations: [
+    AppComponent,
+    TddManagerPageComponent,
+    DefaultComponent,
+    StatisticsPageComponent,
+    QueryPageComponent,
+    ConfirmationDialogComponent,
+    TddManagerComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

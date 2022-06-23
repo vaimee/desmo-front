@@ -1,0 +1,75 @@
+<mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+<mat-form-field appearance="fill">
+  <mat-label>Insert TDD's URL</mat-label>
+  <input matInput type="url" [(ngModel)]="tddUrl" />
+  <button
+    *ngIf="tddUrl"
+    matSuffix
+    mat-icon-button
+    aria-label="Clear"
+    (click)="tddUrl = ''"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+</mat-form-field>
+<button
+  class="Register-button"
+  mat-raised-button
+  color="primary"
+  (click)="registerTDD()"
+  [disabled]="!tddUrl || loading"
+>
+  Register TDD
+</button>
+
+<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <!-- Address Column -->
+  <ng-container matColumnDef="address">
+    <th mat-header-cell *matHeaderCellDef>Address</th>
+    <td mat-cell *matCellDef="let element">{{ element.address }}</td>
+  </ng-container>
+
+  <!-- Url Column -->
+  <ng-container matColumnDef="url">
+    <th mat-header-cell *matHeaderCellDef>URL</th>
+    <td mat-cell *matCellDef="let element">{{ element.url }}</td>
+  </ng-container>
+
+  <!-- State Column -->
+  <ng-container matColumnDef="state">
+    <th mat-header-cell *matHeaderCellDef>State</th>
+    <td mat-cell *matCellDef="let element">
+      {{ element.state ? "ENABLED" : "DISABLED" }}
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+<button
+  class="Register-button"
+  mat-raised-button
+  color="primary"
+  (click)="disableTDD()"
+  [disabled]="!tddRetrieved || !tddEnabled || loading"
+>
+  Disable TDD
+</button>
+<button
+  class="Register-button"
+  mat-raised-button
+  color="primary"
+  (click)="enableTDD()"
+  [disabled]="!tddRetrieved || tddEnabled || loading"
+>
+  Enable TDD
+</button>
+<button
+  class="Register-button"
+  mat-raised-button
+  color="primary"
+  (click)="getTDD()"
+  [disabled]="loading"
+>
+  Get TDD
+</button>
