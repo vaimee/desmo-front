@@ -73,7 +73,7 @@ export class DesmoHubService {
     const ownerAddress = await this.signer.getAddress();
 
     const filterCreated = this.contract.filters.TDDCreated(ownerAddress);
-    this.provider.on(filterCreated, (event: any) => {
+    this.attachListenerForNewEvents(filterCreated, (event: any) => {
       const parsedEvent = this.abiInterface.parseLog(event);
       console.log('TDDCreated', parsedEvent);
       this.TDD_CREATED.next({
@@ -84,21 +84,27 @@ export class DesmoHubService {
     });
 
     const filterDisabled = this.contract.filters.TDDDisabled(ownerAddress);
-    this.provider.on(filterDisabled, (event: any) => {
+    this.attachListenerForNewEvents(filterDisabled, (event: any) => {
       const parsedEvent = this.abiInterface.parseLog(event);
       console.log('TDDDisabled', parsedEvent);
-      this.TDD_DISABLED.next({ key: parsedEvent.args.key, url: parsedEvent.args.url });
+      this.TDD_DISABLED.next({
+        key: parsedEvent.args.key,
+        url: parsedEvent.args.url,
+      });
     });
 
     const filterEnabled = this.contract.filters.TDDEnabled(ownerAddress);
-    this.provider.on(filterEnabled, (event: any) => {
+    this.attachListenerForNewEvents(filterEnabled, (event: any) => {
       const parsedEvent = this.abiInterface.parseLog(event);
       console.log('TDDEnabled', parsedEvent);
-      this.TDD_ENABLED.next({ key: parsedEvent.args.key, url: parsedEvent.args.url });
+      this.TDD_ENABLED.next({
+        key: parsedEvent.args.key,
+        url: parsedEvent.args.url,
+      });
     });
 
     const filterRetrieval = this.contract.filters.TDDRetrieval(ownerAddress);
-    this.provider.on(filterRetrieval, (event: any) => {
+    this.attachListenerForNewEvents(filterRetrieval, (event: any) => {
       const parsedEvent = this.abiInterface.parseLog(event);
       console.log('TDDRetrieval', parsedEvent);
       this.TDD_RETRIEVAL.next({
@@ -106,6 +112,14 @@ export class DesmoHubService {
         url: parsedEvent.args.url,
         disabled: parsedEvent.args.disabled,
       });
+    });
+  }
+
+  private attachListenerForNewEvents(eventFilter: any, listener: any) {
+    // The following is a workaround that will stop to be required when ethers.js v6 will be released:
+    // (see https://github.com/ethers-io/ethers.js/issues/2310)
+    this.provider.once('block', () => {
+      this.provider.on(eventFilter, listener);
     });
   }
 
