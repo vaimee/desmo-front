@@ -26,7 +26,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { TddManagerComponent } from './components/tdd-manager/tdd-manager.component';
-
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 @NgModule({
   declarations: [
     AppComponent,
@@ -57,6 +57,7 @@ import { TddManagerComponent } from './components/tdd-manager/tdd-manager.compon
     MatSnackBarModule,
     MatDialogModule,
     MatProgressBarModule,
+    MatButtonToggleModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

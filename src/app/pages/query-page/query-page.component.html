@@ -1,24 +1,99 @@
 <div class="grid-container">
   <h1 class="mat-h1">Query execution</h1>
-  <mat-grid-list cols="2" rowHeight="350px">
-    <mat-grid-tile *ngFor="let card of cards | async" [colspan]="card.cols" [rowspan]="card.rows">
-      <mat-card class="dashboard-card">
-        <mat-card-header>
-          <mat-card-title>
-            {{card.title}}
-            <button mat-icon-button class="more-button" [matMenuTriggerFor]="menu" aria-label="Toggle menu">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu #menu="matMenu" xPosition="before">
-              <button mat-menu-item>Expand</button>
-              <button mat-menu-item>Remove</button>
-            </mat-menu>
-          </mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="dashboard-card-content">
-          <div>Card Content Here</div>
-        </mat-card-content>
-      </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
+  <mat-card>
+    <mat-card-content>
+      <mat-card-title>Build your query</mat-card-title>
+      <!-- material design button that makes the input field "property name" visible-->
+      <button *ngIf="new_query" class="add-button" mat-fab color="primary" aria-label="Build new query" (click)="build_new_query_click()">
+        <mat-icon>add</mat-icon>
+      </button>
+      <!--TODO: do this in a separate component-->
+      <div>
+      <mat-form-field *ngIf="query_tree.property_identifier">
+        <mat-placeholder>Input property</mat-placeholder>
+        <input matInput type="text" [(ngModel)]="query.property.identifier" [readonly]="!query_tree.property_identifier_modifying">
+        <button *ngIf="query_tree.property_identifier_modifying" mat-button matSuffix mat-stroked-button aria-label="done" (click)="query_property_done_click()">
+          <mat-icon>done</mat-icon>
+        </button>
+        <button *ngIf="query_tree.property_identifier_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_property_clear_click()">
+          <mat-icon>clear</mat-icon>
+        </button>
+        <button *ngIf="!query_tree.property_identifier_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_property_edit_click()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </mat-form-field>
+      </div>
+      <!-- property prefix-->
+      <div>
+      <mat-form-field *ngIf="query_tree.property_prefix">
+        <mat-placeholder>Prefix for {{query_tree.property_prefix_name}}</mat-placeholder>
+        <input matInput type="text" [(ngModel)]="query_tree.property_prefix_uri" [readonly]="!query_tree.property_prefix_modifying">
+        <button *ngIf="query_tree.property_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="done" (click)="query_property_prefix_done_click()">
+          <mat-icon>done</mat-icon>
+        </button>
+        <button *ngIf="query_tree.property_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_property_prefix_clear_click()">
+          <mat-icon>clear</mat-icon>
+        </button>
+        <button *ngIf="!query_tree.property_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_property_prefix_edit_click()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </mat-form-field>
+      </div>
+      <!------------------->
+
+      <!---unit -->
+      <div>
+        <mat-form-field *ngIf="query_tree.unit">
+          <mat-placeholder>input unit</mat-placeholder>
+          <input matInput type="text" [(ngModel)]="query.property.unit" [readonly]="!query_tree.unit_modifying">
+          <button *ngIf="query_tree.unit_modifying" mat-button matSuffix mat-stroked-button aria-label="done" (click)="query_unit_done_click()">
+            <mat-icon>done</mat-icon>
+          </button>
+          <button *ngIf="query_tree.unit_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_unit_clear_click()">
+            <mat-icon>clear</mat-icon>
+          </button>
+          <button *ngIf="!query_tree.unit_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_unit_edit_click()">
+            <mat-icon>edit</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <!--prefix unit-->
+      <div>
+      <mat-form-field *ngIf="query_tree.unit_prefix">
+        <mat-placeholder>Prefix for {{query_tree.unit_prefix_name}}</mat-placeholder>
+        <input matInput type="text" [(ngModel)]="query_tree.unit_prefix_uri" [readonly]="!query_tree.unit_prefix_modifying">
+        <button *ngIf="query_tree.unit_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="done" (click)="query_unit_prefix_done_click()">
+          <mat-icon>done</mat-icon>
+        </button>
+        <button *ngIf="query_tree.unit_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_unit_prefix_clear_click()">
+          <mat-icon>clear</mat-icon>
+        </button>
+        <button *ngIf="!query_tree.unit_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_unit_prefix_edit_click()">
+          <mat-icon>edit</mat-icon>
+        </button>
+      </mat-form-field>
+      </div>
+      <!--datatype-->
+      <div>
+        <mat-button-toggle-group *ngIf="query_tree.datatype" [(ngModel)]="query.property.datatype" name="fontStyle" aria-label="Font Style">
+          <mat-button-toggle value=0 >Integer</mat-button-toggle>
+          <mat-button-toggle value=1>Decimal</mat-button-toggle>
+          <mat-button-toggle value=2>Boolean</mat-button-toggle>
+          <mat-button-toggle value=3>String</mat-button-toggle>
+
+        </mat-button-toggle-group>
+      </div>
+
+      <div class="grid-item">
+        <button
+          class="Register-button"
+          mat-raised-button
+          color="primary"
+          disabled="sendQueryButtonDisabled"
+        >
+          Execute query
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </div>
