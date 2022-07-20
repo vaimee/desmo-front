@@ -1,3 +1,4 @@
+import { ITransactionSent } from './../../services/desmo-hub/desmo-hub.types';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -6,7 +7,7 @@ import { Subscription } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { DesmoHubService } from 'src/app/services/desmo-hub/desmo-hub.service';
 
-export interface TDD {
+interface TDD {
   address: string;
   url: string;
   state: boolean;
@@ -29,15 +30,16 @@ export class TddManagerComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(
-    private snackBar: MatSnackBar,
-    public dialog: MatDialog,
-    private desmoHub: DesmoHubService
-  ) {
+  constructor(public dialog: MatDialog, private desmoHub: DesmoHubService) {
     // Check the cache for pre-existing data or initialise with an empty list:
     const tddList: string = localStorage.getItem(this.CACHE_KEY) ?? '[]';
     this.tableData = JSON.parse(tddList) as TDD[];
     this.dataSource = new MatTableDataSource<TDD>(this.tableData);
+
+    if (this.tableData.length > 0) {
+      this.tddRetrieved = true;
+      this.tddEnabled = this.tableData[0].state;
+    }
   }
 
   ngOnInit(): void {
@@ -65,7 +67,6 @@ export class TddManagerComponent implements OnInit, OnDestroy {
         this.tddRetrieved = true;
         this.tddEnabled = !event.disabled;
         this.loading = false;
-        this.openSnackBar('A new TDD was created!', 'Ok');
       })
     );
 
@@ -92,7 +93,6 @@ export class TddManagerComponent implements OnInit, OnDestroy {
         this.tddRetrieved = true;
         this.tddEnabled = false;
         this.loading = false;
-        this.openSnackBar('A TDD was disabled!', 'Ok');
       })
     );
 
@@ -119,7 +119,6 @@ export class TddManagerComponent implements OnInit, OnDestroy {
         this.tddRetrieved = true;
         this.tddEnabled = true;
         this.loading = false;
-        this.openSnackBar('A TDD was enabled!', 'Ok');
       })
     );
 
@@ -139,7 +138,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
             state: !event.disabled,
           });
         }
-        
+
         // Save new data inside the cache:
         localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
 
@@ -147,7 +146,6 @@ export class TddManagerComponent implements OnInit, OnDestroy {
         this.tddRetrieved = true;
         this.tddEnabled = !event.disabled;
         this.loading = false;
-        this.openSnackBar('A TDD was retrieved!', 'Ok');
       })
     );
 
@@ -157,12 +155,6 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-  }
-
-  private openSnackBar(message: string, action: string) {
-    this.snackBar.open(message, action, {
-      duration: 3000,
-    });
   }
 
   registerTDD() {

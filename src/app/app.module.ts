@@ -24,9 +24,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { TddManagerComponent } from './components/tdd-manager/tdd-manager.component';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { TransactionViewerComponent } from './components/transaction-viewer/transaction-viewer.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -36,6 +40,7 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     QueryPageComponent,
     ConfirmationDialogComponent,
     TddManagerComponent,
+    TransactionViewerComponent,
   ],
   imports: [
     BrowserModule,
@@ -58,6 +63,8 @@ import {MatButtonToggleModule} from '@angular/material/button-toggle';
     MatDialogModule,
     MatProgressBarModule,
     MatButtonToggleModule,
+    MatTooltipModule,
+    MatPaginatorModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

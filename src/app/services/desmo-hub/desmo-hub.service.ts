@@ -10,12 +10,13 @@ import { Injectable } from '@angular/core';
 import { ethers } from 'ethers';
 import { desmoHubABI } from './desmoHubABI';
 import { Observable, Subject } from 'rxjs';
+import { EthereumDatatypes, getArray, getMappings, getNumberVariable, getStringVariable } from './storage-utils';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DesmoHubService {
-  private provider: any;
+  private provider: ethers.providers.Web3Provider;
   private signer: any;
   private contract: any;
   private contractWithSigner: any;
@@ -51,11 +52,12 @@ export class DesmoHubService {
 
     this.TRANSACTION_SENT = new Subject<ITransactionSent>();
     this.transactionSent$ = this.TRANSACTION_SENT.asObservable();
+
+    // @ts-ignore
+    this.provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
   }
 
   public async connect() {
-    // @ts-ignore
-    this.provider = new ethers.providers.Web3Provider(window.ethereum, 'any');
     // MetaMask requires requesting permission to connect users accounts
     await this.provider.send('eth_requestAccounts', []);
     // The MetaMask plugin also allows signing transactions to
@@ -216,5 +218,20 @@ export class DesmoHubService {
 
   ngOnDestroy() {
     this.provider.removeAllListeners();
+  }
+
+  async readStorage(): Promise<void> {
+    console.log("SLOT [0]: " + await getNumberVariable(this.provider, environment.desmoHubAddress, 0))
+    console.log("SLOT [1]: " + await getNumberVariable(this.provider, environment.desmoHubAddress, 1))
+    const keys = await getArray(this.provider, environment.desmoHubAddress, 2, EthereumDatatypes.hex);
+    console.log("SLOT [2-3]: " + keys);
+    console.log("SLOT [4]: " + await getNumberVariable(this.provider, environment.desmoHubAddress, 4))
+
+    // "0x3252bcaea03d7bc3afe95a76c845c08b3121b6e7b90a3ba513c1a664d3ee1b1a"
+    // "0x1800fc8613ff3ff65bd8b78631d899e9ca07ae14b1caad56a26479f3f419488b"
+
+    const bibba = await getNumberVariable(this.provider, environment.desmoHubAddress, "0x3252bcaea03d7bc3afe95a76c845c08b3121b6e7b90a3ba513c1a664d3ee1b1b")
+    console.log("String is: " + bibba);
+    console.log(await getMappings(this.provider, environment.desmoHubAddress, 4, [EthereumDatatypes.string, EthereumDatatypes.hex, EthereumDatatypes.boolean], keys));
   }
 }

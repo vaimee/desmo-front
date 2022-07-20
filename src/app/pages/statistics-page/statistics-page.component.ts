@@ -1,6 +1,13 @@
 import { Component } from '@angular/core';
-import { map } from 'rxjs/operators';
-import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
+import { MatTableDataSource } from '@angular/material/table';
+import { Subscription } from 'rxjs';
+import { DesmoHubService } from 'src/app/services/desmo-hub/desmo-hub.service';
+
+interface TDD {
+  address: string;
+  url: string;
+  state: boolean;
+}
 
 @Component({
   selector: 'app-statistics-page',
@@ -8,26 +15,31 @@ import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
   styleUrls: ['./statistics-page.component.css']
 })
 export class StatisticsPageComponent {
-  /** Based on the screen size, switch from standard to one column per row */
-  cards = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
-    map(({ matches }) => {
-      if (matches) {
-        return [
-          { title: 'Card 1', cols: 1, rows: 1 },
-          { title: 'Card 2', cols: 1, rows: 1 },
-          { title: 'Card 3', cols: 1, rows: 1 },
-          { title: 'Card 4', cols: 1, rows: 1 }
-        ];
-      }
+  private readonly CACHE_KEY: string = 'completeTddList';
 
-      return [
-        { title: 'Card 1', cols: 2, rows: 1 },
-        { title: 'Card 2', cols: 1, rows: 1 },
-        { title: 'Card 3', cols: 1, rows: 2 },
-        { title: 'Card 4', cols: 1, rows: 1 }
-      ];
-    })
-  );
+  displayedColumns: string[] = ['address', 'url', 'state'];
+  tableData: TDD[];
+  dataSource: MatTableDataSource<TDD>;
 
-  constructor(private breakpointObserver: BreakpointObserver) {}
+  loading: boolean = false;
+  private subscriptions: Subscription = new Subscription();
+
+  constructor(private desmoHub: DesmoHubService) {
+    // Check the cache for pre-existing data or initialise with an empty list:
+    const tddList: string = localStorage.getItem(this.CACHE_KEY) ?? '[]';
+    this.tableData = JSON.parse(tddList) as TDD[];
+    this.dataSource = new MatTableDataSource<TDD>(this.tableData);
+  }
+
+  ngOnInit(): void {
+    // TODO: implement a mechanism in the SDK to retrieve the complete list of TDDs
+    // this.tableData = this.desmoHub.getCompleteListOfTDDs();
+
+    // Save new data inside the cache:
+    localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
+
+    this.dataSource = new MatTableDataSource<TDD>(this.tableData);
+    this.loading = false;
+  }
+
 }

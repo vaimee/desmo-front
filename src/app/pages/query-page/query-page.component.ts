@@ -1,23 +1,21 @@
 import { Component } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { Breakpoints, BreakpointObserver } from '@angular/cdk/layout';
-import IQuery, { defaultIQuery, IPrefix, RequestedDataType } from 'src/app/src/interface/IQuery';
-import { defaultIQueryBuildTree, IQueryBuildTree } from 'src/app/src/interface/IQueryBuildTree';
-import { IQueryTreeState } from 'src/app/src/interface/IQueryTreeState';
-
-
+import IQuery, { defaultIQuery, IPrefix, RequestedDataType } from 'src/app/interface/IQuery';
+import { defaultIQueryBuildTree, IQueryBuildTree } from 'src/app/interface/IQueryBuildTree';
 
 @Component({
   selector: 'app-query-page',
   templateUrl: './query-page.component.html',
   styleUrls: ['./query-page.component.css']
 })
+
 export class QueryPageComponent {
   
   new_query = true;
   sendQueryButtonDisabled: boolean = true;
   query: IQuery = defaultIQuery();
-  query_tree : IQueryBuildTree = defaultIQueryBuildTree();
+  query_tree : IQueryBuildTree = defaultIQueryBuildTree;
 
 
   build_new_query_click(): void {
@@ -31,7 +29,7 @@ export class QueryPageComponent {
     this.query_tree.property_identifier_modifying = false;
     this.new_query = true;
     this.query = defaultIQuery();
-    this.query_tree = defaultIQueryBuildTree();
+    this.query_tree = defaultIQueryBuildTree;
   }
   query_property_done_click():void {
     const hasPrefixProperty : [boolean, string]= this.hasPrefix(this.query.property.identifier);
@@ -53,7 +51,7 @@ export class QueryPageComponent {
     const propertyValue = this.query.property.identifier;
     this.query = defaultIQuery();
     this.query.property.identifier = propertyValue;
-    this.query_tree = defaultIQueryBuildTree();
+    this.query_tree = defaultIQueryBuildTree;
     this.query_tree.property_identifier = true;
     this.query_tree.property_identifier_modifying = true;
     // delete from query.prefixList the prefix that has as abbreviation the same as query_tree.property_prefix_name
