@@ -31,6 +31,9 @@ import { TddManagerComponent } from './components/tdd-manager/tdd-manager.compon
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TransactionViewerComponent } from './components/transaction-viewer/transaction-viewer.component';
 import { MatStepperModule } from '@angular/material/stepper';
+import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
+
+const mapboxToken = "pk.eyJ1IjoiaW9zb25vcGVyc2lhIiwiYSI6ImNsNjBzYjVldjAwNWszaW1rNWZtdTRuNjkifQ.2lGOSvqt5lahEfZYLa3eRg";
 
 @NgModule({
   declarations: [
@@ -67,7 +70,11 @@ import { MatStepperModule } from '@angular/material/stepper';
     MatTooltipModule,
     MatPaginatorModule,
     MatStepperModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgxMapboxGLModule.withConfig({
+      accessToken: mapboxToken, // Optional, can also be set per map (accessToken input of mgl-map)
+      // geocoderAccessToken: mapboxToken // Optional, specify if different from the map access token, can also be set per mgl-geocoder (accessToken input of mgl-geocoder)
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent],
