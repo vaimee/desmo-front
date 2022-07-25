@@ -18,7 +18,7 @@ import { StatisticsPageComponent } from './pages/statistics-page/statistics-page
 import { MatGridListModule } from '@angular/material/grid-list';
 import { QueryPageComponent } from './pages/query-page/query-page.component';
 import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
@@ -28,8 +28,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { TddManagerComponent } from './components/tdd-manager/tdd-manager.component';
-import {MatButtonToggleModule} from '@angular/material/button-toggle';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { TransactionViewerComponent } from './components/transaction-viewer/transaction-viewer.component';
+import { MatStepperModule } from '@angular/material/stepper';
 
 @NgModule({
   declarations: [
@@ -65,6 +66,8 @@ import { TransactionViewerComponent } from './components/transaction-viewer/tran
     MatButtonToggleModule,
     MatTooltipModule,
     MatPaginatorModule,
+    MatStepperModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent],

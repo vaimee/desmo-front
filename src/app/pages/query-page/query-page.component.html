@@ -3,97 +3,206 @@
   <mat-card>
     <mat-card-content>
       <mat-card-title>Build your query</mat-card-title>
-      <!-- material design button that makes the input field "property name" visible-->
-      <button *ngIf="new_query" class="add-button" mat-fab color="primary" aria-label="Build new query" (click)="build_new_query_click()">
-        <mat-icon>add</mat-icon>
-      </button>
-      <!--TODO: do this in a separate component-->
-      <div>
-      <mat-form-field *ngIf="query_tree.property_identifier">
-        <mat-placeholder>Input property</mat-placeholder>
-        <input matInput type="text" [(ngModel)]="query.property.identifier" [readonly]="!query_tree.property_identifier_modifying">
-        <button *ngIf="query_tree.property_identifier_modifying" mat-button matSuffix mat-stroked-button aria-label="done" (click)="query_property_done_click()">
-          <mat-icon>done</mat-icon>
-        </button>
-        <button *ngIf="query_tree.property_identifier_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_property_clear_click()">
-          <mat-icon>clear</mat-icon>
-        </button>
-        <button *ngIf="!query_tree.property_identifier_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_property_edit_click()">
-          <mat-icon>edit</mat-icon>
-        </button>
-      </mat-form-field>
-      </div>
-      <!-- property prefix-->
-      <div>
-      <mat-form-field *ngIf="query_tree.property_prefix">
-        <mat-placeholder>Prefix for {{query_tree.property_prefix_name}}</mat-placeholder>
-        <input matInput type="text" [(ngModel)]="query_tree.property_prefix_uri" [readonly]="!query_tree.property_prefix_modifying">
-        <button *ngIf="query_tree.property_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="done" (click)="query_property_prefix_done_click()">
-          <mat-icon>done</mat-icon>
-        </button>
-        <button *ngIf="query_tree.property_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_property_prefix_clear_click()">
-          <mat-icon>clear</mat-icon>
-        </button>
-        <button *ngIf="!query_tree.property_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_property_prefix_edit_click()">
-          <mat-icon>edit</mat-icon>
-        </button>
-      </mat-form-field>
-      </div>
-      <!------------------->
+      <span style="color: red">Hint: remember that you can use prefixes to shorten the IRIs!</span>
 
-      <!---unit -->
-      <div>
-        <mat-form-field *ngIf="query_tree.unit">
-          <mat-placeholder>input unit</mat-placeholder>
-          <input matInput type="text" [(ngModel)]="query.property.unit" [readonly]="!query_tree.unit_modifying">
-          <button *ngIf="query_tree.unit_modifying" mat-button matSuffix mat-stroked-button aria-label="done" (click)="query_unit_done_click()">
-            <mat-icon>done</mat-icon>
-          </button>
-          <button *ngIf="query_tree.unit_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_unit_clear_click()">
-            <mat-icon>clear</mat-icon>
-          </button>
-          <button *ngIf="!query_tree.unit_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_unit_edit_click()">
-            <mat-icon>edit</mat-icon>
-          </button>
-        </mat-form-field>
-      </div>
-      <!--prefix unit-->
-      <div>
-      <mat-form-field *ngIf="query_tree.unit_prefix">
-        <mat-placeholder>Prefix for {{query_tree.unit_prefix_name}}</mat-placeholder>
-        <input matInput type="text" [(ngModel)]="query_tree.unit_prefix_uri" [readonly]="!query_tree.unit_prefix_modifying">
-        <button *ngIf="query_tree.unit_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="done" (click)="query_unit_prefix_done_click()">
-          <mat-icon>done</mat-icon>
-        </button>
-        <button *ngIf="query_tree.unit_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_unit_prefix_clear_click()">
-          <mat-icon>clear</mat-icon>
-        </button>
-        <button *ngIf="!query_tree.unit_prefix_modifying" mat-button matSuffix mat-stroked-button aria-label="clear" (click)="query_unit_prefix_edit_click()">
-          <mat-icon>edit</mat-icon>
-        </button>
-      </mat-form-field>
-      </div>
-      <!--datatype-->
-      <div>
-        <mat-button-toggle-group *ngIf="query_tree.datatype" [(ngModel)]="query.property.datatype" name="fontStyle" aria-label="Font Style">
-          <mat-button-toggle value=0 >Integer</mat-button-toggle>
-          <mat-button-toggle value=1>Decimal</mat-button-toggle>
-          <mat-button-toggle value=2>Boolean</mat-button-toggle>
-          <mat-button-toggle value=3>String</mat-button-toggle>
+      <mat-vertical-stepper
+        linear
+        animationDuration="1500"
+        (selectionChange)="handlePrefixes($event)"
+        #stepper
+      >
+        <!-- STEP 1: property -->
+        <mat-step [stepControl]="propertyFormGroup" [optional]="false">
+          <form [formGroup]="propertyFormGroup">
+            <ng-template matStepLabel>Property</ng-template>
+            <div>
+              <mat-form-field>
+                <mat-label>Insert property IRI:</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  formControlName="propertyIRI"
+                  placeholder="Property IRI here..."
+                  #propertyIRIinput
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  color="accent"
+                  aria-label="Clear field"
+                  *ngIf="propertyIRIinput.value != ''"
+                  (click)="clearPropertyControl('propertyIRI')"
+                >
+                  <mat-icon>clear</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+            <div style="margin-top: 16px">
+              <mat-form-field>
+                <mat-label>Insert unit IRI:</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  formControlName="unitIRI"
+                  placeholder="Unit IRI here..."
+                  #unitIRIinput
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  color="accent"
+                  aria-label="Clear field"
+                  *ngIf="unitIRIinput.value != ''"
+                  (click)="clearPropertyControl('unitIRI')"
+                >
+                  <mat-icon>clear</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+            <div style="margin-top: 16px" [formGroup]="propertyFormGroup">
+              <div>
+                <mat-label>Select the desired datatype:</mat-label>
+              </div>
+              <div>
+                <mat-button-toggle-group
+                  formControlName="datatype"
+                  name="datatype"
+                  aria-label="Data type"
+                  multiple="false"
+                  required
+                >
+                  <mat-button-toggle [value]="0">Integer</mat-button-toggle>
+                  <mat-button-toggle [value]="1">Decimal</mat-button-toggle>
+                  <mat-button-toggle [value]="2">Boolean</mat-button-toggle>
+                  <mat-button-toggle [value]="3">String</mat-button-toggle>
+                </mat-button-toggle-group>
+              </div>
+            </div>
 
-        </mat-button-toggle-group>
-      </div>
+            <div style="margin-top: 16px">
+              <button mat-button mat-stroked-button matStepperNext>
+                Next step
+              </button>
+            </div>
+          </form>
+        </mat-step>
 
-      <div class="grid-item">
-        <button
-          class="Register-button"
-          mat-raised-button
-          color="primary"
-          disabled="sendQueryButtonDisabled"
-        >
-          Execute query
-        </button>
-      </div>
+        <!-- STEP 2: filters (static, dynamic, geographical, temporal) -->
+        <mat-step [stepControl]="filtersFormGroup" [optional]="true">
+          <form [formGroup]="filtersFormGroup">
+            <ng-template matStepLabel>Filters</ng-template>
+            <div>
+              <mat-form-field>
+                <mat-label>Insert JsonPath filter expression:</mat-label>
+                <span matPrefix>$.</span>
+                <input
+                  matInput
+                  placeholder="JsonPath filter here..."
+                  formControlName="jsonPathExpression"
+                  #jsonPathinput
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  color="accent"
+                  aria-label="Clear field"
+                  *ngIf="jsonPathinput.value != ''"
+                  (click)="clearFilterControl('jsonPathExpression')"
+                >
+                  <mat-icon>clear</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+            <div style="margin-top: 16px">
+              <mat-form-field>
+                <mat-label>Insert dynamic filter expression:</mat-label>
+                <input
+                  matInput
+                  placeholder="Dynamic filter here..."
+                  formControlName="dynamicFilterExpression"
+                  #dynamicFilterinput
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  color="accent"
+                  aria-label="Clear field"
+                  *ngIf="dynamicFilterinput.value != ''"
+                  (click)="clearPropertyControl('dynamicFilterExpression')"
+                >
+                  <mat-icon>clear</mat-icon>
+                </button>
+              </mat-form-field>
+            </div>
+            <div style="margin-top: 16px">
+              <button mat-button mat-stroked-button matStepperPrevious>
+                Prev. step
+              </button>
+              <button mat-button mat-stroked-button matStepperNext>
+                Next step
+              </button>
+            </div>
+          </form>
+        </mat-step>
+
+        <!-- STEP 3: prefixes and query submission-->
+        <mat-step [optional]="false">
+          <ng-template matStepLabel>Done</ng-template>
+          <h3 *ngIf="prefixesFormArray.length <= 0">You are now done!</h3>
+          <div *ngIf="prefixesFormArray.length > 0">
+            <h3>You are almost done!</h3>
+            <h4>Please, provide the full version of the prefixes you used:</h4>
+
+            <form>
+              <div
+                *ngFor="
+                  let prefixCtrl of prefixesFormArray.controls;
+                  let i = index
+                "
+              >
+                <mat-form-field>
+                  <span matPrefix>{{ prefixNames[i] }}:&nbsp;&lt;</span>
+                  <input
+                    matInput
+                    placeholder="Extended IRI here..."
+                    [formControl]="getPrefixControl(i)"
+                  />
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    color="accent"
+                    aria-label="Clear field"
+                    *ngIf="prefixesFormArray.controls[i].value != ''"
+                    (click)="clearPrefixControl(i)"
+                  >
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                  <span matSuffix>&gt;</span>
+                </mat-form-field>
+              </div>
+            </form>
+          </div>
+
+          <div>
+            <button mat-stroked-button matStepperPrevious>Prev. step</button>
+            <button
+              mat-stroked-button
+              color="accent"
+              (click)="resetQueryBuilder(stepper)"
+            >
+              Reset
+            </button>
+            <button
+              mat-stroked-button
+              color="primary"
+              type="submit"
+              (click)="submitQuery()"
+            >
+              Execute query
+            </button>
+          </div>
+        </mat-step>
+      </mat-vertical-stepper>
     </mat-card-content>
   </mat-card>
 </div>
