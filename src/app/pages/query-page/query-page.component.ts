@@ -156,6 +156,7 @@ export class QueryPageComponent {
 
   private validIRIValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
+      if (control.value !== null) {
       const IRIString = control.value as string;
       if (this.isValidHttpUrl(IRIString)) {
         return null;
@@ -164,6 +165,7 @@ export class QueryPageComponent {
       const semicolonIndex = IRIString.indexOf(':');
       if (semicolonIndex >= 0) {
         return null;
+        }
       }
       return { invalidIRI: { value: control.value } };
     };
@@ -171,6 +173,7 @@ export class QueryPageComponent {
 
   private httpUrlValidator(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
+      if (control.value !== null) {
       const IRIString = control.value as string;
 
       if (
@@ -178,6 +181,7 @@ export class QueryPageComponent {
         (IRIString.endsWith('#') || IRIString.endsWith('/'))
       ) {
         return null;
+        }
       }
       return { invalidHttpUrl: { value: control.value } };
     };
