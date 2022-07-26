@@ -29,6 +29,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { ConfirmationDialogComponent } from './components/confirmation-dialog/confirmation-dialog.component';
 import { TddManagerComponent } from './components/tdd-manager/tdd-manager.component';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatRadioModule } from '@angular/material/radio';
 import { TransactionViewerComponent } from './components/transaction-viewer/transaction-viewer.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
@@ -69,6 +70,7 @@ const mapboxToken = "pk.eyJ1IjoiaW9zb25vcGVyc2lhIiwiYSI6ImNsNjBzYjVldjAwNWszaW1r
     MatButtonToggleModule,
     MatTooltipModule,
     MatPaginatorModule,
+    MatRadioModule,
     MatStepperModule,
     ReactiveFormsModule,
     NgxMapboxGLModule.withConfig({

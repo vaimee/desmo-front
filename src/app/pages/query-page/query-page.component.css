@@ -23,3 +23,15 @@
 .dashboard-card-content {
   text-align: center;
 }
+
+mgl-map {
+  width: 40vh;
+  height: 25vh;
+  min-width: 250px;
+  min-height: 155px;
+  margin-top: 10px;
+}
+
+.margin-right {
+  margin-right: 12px;
+}
