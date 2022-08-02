@@ -33,6 +33,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { TransactionViewerComponent } from './components/transaction-viewer/transaction-viewer.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
+import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 
 const mapboxToken = "pk.eyJ1IjoiaW9zb25vcGVyc2lhIiwiYSI6ImNsNjBzYjVldjAwNWszaW1rNWZtdTRuNjkifQ.2lGOSvqt5lahEfZYLa3eRg";
 
@@ -78,7 +79,7 @@ const mapboxToken = "pk.eyJ1IjoiaW9zb25vcGVyc2lhIiwiYSI6ImNsNjBzYjVldjAwNWszaW1r
       // geocoderAccessToken: mapboxToken // Optional, specify if different from the map access token, can also be set per mgl-geocoder (accessToken input of mgl-geocoder)
     }),
   ],
-  providers: [],
+  providers: [DesmoldSDKService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
