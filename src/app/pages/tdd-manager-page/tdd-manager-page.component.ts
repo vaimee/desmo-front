@@ -31,7 +31,9 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
     private breakpointObserver: BreakpointObserver
   ) {}
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.desmold.connect();
+
     /** Based on the screen size, switch from standard to one column per row */
     this.subscriptions.add(
       this.breakpointObserver

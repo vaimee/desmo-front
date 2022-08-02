@@ -41,7 +41,9 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.desmold.connect();
+
     // tddCreated subscription
     this.subscriptions.add(
       this.desmold.desmoHub.tddCreated$.subscribe((event) => {
@@ -147,9 +149,6 @@ export class TddManagerComponent implements OnInit, OnDestroy {
         this.loading = false;
       })
     );
-
-    // This must be done at the end:
-    this.desmold.connect();
   }
 
   ngOnDestroy(): void {

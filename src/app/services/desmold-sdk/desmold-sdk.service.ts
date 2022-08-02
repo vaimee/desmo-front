@@ -1,34 +1,45 @@
 import { Injectable } from '@angular/core';
-import { DesmoContract, DesmoHub, WalletSignerMetamask } from '@vaimee/desmold-sdk';
+import {
+  DesmoContract,
+  DesmoHub,
+  WalletSignerMetamask,
+} from '@vaimee/desmold-sdk';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DesmoldSDKService {
   private walletSigner: WalletSignerMetamask;
-  private _desmoHub: DesmoHub;
-  private _desmoContract: DesmoContract;
+  private _desmoHub!: DesmoHub;
+  private _desmoContract!: DesmoContract;
+  private isConnected: boolean = false;
 
-  get desmoHub(){
+  get desmoHub() {
     return this._desmoHub;
   }
 
-  get desmoContract(){
+  get desmoContract() {
     return this._desmoContract;
   }
+
   constructor() {
     // @ts-ignore
     this.walletSigner = new WalletSignerMetamask(window.ethereum);
-    this._desmoHub = new DesmoHub(this.walletSigner);
-    this._desmoContract = new DesmoContract(this.walletSigner);
   }
 
   public async connect() {
+    if (this.isConnected) return;
+
+    this.isConnected = true;
+
     await this.walletSigner.connect();
+    this._desmoHub = new DesmoHub(this.walletSigner);
+    this._desmoContract = new DesmoContract(this.walletSigner);
+
+    await this._desmoHub.startListeners();
   }
 
   ngOnDestroy() {
     this.desmoHub.stopListeners();
   }
-
 }

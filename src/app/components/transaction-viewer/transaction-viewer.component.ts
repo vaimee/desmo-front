@@ -30,7 +30,9 @@ export class TransactionViewerComponent implements OnInit, AfterViewInit, OnDest
     this.dataSource = new MatTableDataSource<ISentTransaction>(this.tableData);
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    await this.desmold.connect();
+
     this.subscriptions.add(
       this.desmold.desmoHub.transactionSent$.subscribe((tx) => {
         this.tableData.unshift(tx);
