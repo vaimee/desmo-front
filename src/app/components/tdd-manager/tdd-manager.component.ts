@@ -1,11 +1,10 @@
-import { ITransactionSent } from './../../services/desmo-hub/desmo-hub.types';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { DesmoHubService } from 'src/app/services/desmo-hub/desmo-hub.service';
+import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 
 interface TDD {
   address: string;
@@ -30,7 +29,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(public dialog: MatDialog, private desmoHub: DesmoHubService) {
+  constructor(public dialog: MatDialog, private desmold: DesmoldSDKService) {
     // Check the cache for pre-existing data or initialise with an empty list:
     const tddList: string = localStorage.getItem(this.CACHE_KEY) ?? '[]';
     this.tableData = JSON.parse(tddList) as TDD[];
@@ -45,7 +44,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // tddCreated subscription
     this.subscriptions.add(
-      this.desmoHub.tddCreated$.subscribe((event) => {
+      this.desmold.desmoHub.tddCreated$.subscribe((event) => {
         const rowIndex: number = this.tableData.findIndex(
           (tdd: TDD) => tdd.address === event.key
         );
@@ -72,7 +71,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     // tddDisabled subscription
     this.subscriptions.add(
-      this.desmoHub.tddDisabled$.subscribe((event) => {
+      this.desmold.desmoHub.tddDisabled$.subscribe((event) => {
         const rowIndex: number = this.tableData.findIndex(
           (tdd: TDD) => tdd.address === event.key
         );
@@ -98,7 +97,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     // tddEnabled subscription
     this.subscriptions.add(
-      this.desmoHub.tddEnabled$.subscribe((event) => {
+      this.desmold.desmoHub.tddEnabled$.subscribe((event) => {
         const rowIndex: number = this.tableData.findIndex(
           (tdd: TDD) => tdd.address === event.key
         );
@@ -124,7 +123,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     // tddRetrieval subscription
     this.subscriptions.add(
-      this.desmoHub.tddRetrieval$.subscribe((event) => {
+      this.desmold.desmoHub.tddRetrieval$.subscribe((event) => {
         const rowIndex: number = this.tableData.findIndex(
           (tdd: TDD) => tdd.address === event.key
         );
@@ -150,7 +149,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     );
 
     // This must be done at the end:
-    this.desmoHub.connect();
+    this.desmold.connect();
   }
 
   ngOnDestroy(): void {
@@ -162,7 +161,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.desmoHub.registerTDD(this.tddUrl);
+        await this.desmold.desmoHub.registerTDD(this.tddUrl);
         this.loading = true;
       }
     });
@@ -173,7 +172,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.desmoHub.disableTDD();
+        await this.desmold.desmoHub.disableTDD();
         this.loading = true;
       }
     });
@@ -184,7 +183,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.desmoHub.enableTDD();
+        await this.desmold.desmoHub.enableTDD();
         this.loading = true;
       }
     });
@@ -195,7 +194,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.desmoHub.getTDD();
+        await this.desmold.desmoHub.getTDD();
         this.loading = true;
       }
     });

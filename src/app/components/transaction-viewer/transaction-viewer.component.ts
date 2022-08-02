@@ -1,10 +1,9 @@
-import { ITransactionSent } from './../../services/desmo-hub/desmo-hub.types';
 import { Component, OnInit, OnDestroy, ViewChild, AfterViewInit } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
-import { DesmoHubService } from 'src/app/services/desmo-hub/desmo-hub.service';
+import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { MatPaginator } from '@angular/material/paginator';
-
+import { ISentTransaction } from '@vaimee/desmold-sdk';
 @Component({
   selector: 'app-transaction-viewer',
   templateUrl: './transaction-viewer.component.html',
@@ -13,8 +12,8 @@ import { MatPaginator } from '@angular/material/paginator';
 export class TransactionViewerComponent implements OnInit, AfterViewInit, OnDestroy {
   private readonly CACHE_KEY: string = 'transactionList';
   displayedColumns: string[] = ['operation', 'hash', 'sent', 'confirmed'];
-  tableData: ITransactionSent[];
-  dataSource: MatTableDataSource<ITransactionSent>;
+  tableData: ISentTransaction[];
+  dataSource: MatTableDataSource<ISentTransaction>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
@@ -24,18 +23,18 @@ export class TransactionViewerComponent implements OnInit, AfterViewInit, OnDest
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private desmoHub: DesmoHubService) {
+  constructor(private desmold: DesmoldSDKService) {
     // Check the cache for pre-existing data or initialise with an empty list:
     const txList: string = localStorage.getItem(this.CACHE_KEY) ?? '[]';
-    this.tableData = JSON.parse(txList) as ITransactionSent[];
-    this.dataSource = new MatTableDataSource<ITransactionSent>(this.tableData);
+    this.tableData = JSON.parse(txList) as ISentTransaction[];
+    this.dataSource = new MatTableDataSource<ISentTransaction>(this.tableData);
   }
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.desmoHub.transactionSent$.subscribe((tx) => {
+      this.desmold.desmoHub.transactionSent$.subscribe((tx) => {
         this.tableData.unshift(tx);
-        this.dataSource = new MatTableDataSource<ITransactionSent>(
+        this.dataSource = new MatTableDataSource<ISentTransaction>(
           this.tableData
         );
 

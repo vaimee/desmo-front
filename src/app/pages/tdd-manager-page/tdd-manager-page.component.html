@@ -1,14 +1,7 @@
 <div class="grid-container">
   <h1 class="mat-h1">TDD Manager</h1>
   <h3 class="mat-h3">Manage your TDDs</h3>
-  <button
-  class="Register-button"
-  mat-raised-button
-  color="primary"
-  (click)="testFunction()"
->
-  TEST
-</button>
+
   <mat-grid-list cols="2" rows="2" rowHeight="2:1">
     <mat-grid-tile [colspan]="isSmallScreen ? 2 : 1" [rowspan]="1">
       <app-tdd-manager></app-tdd-manager>

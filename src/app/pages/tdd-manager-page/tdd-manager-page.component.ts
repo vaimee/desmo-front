@@ -1,4 +1,4 @@
-import { DesmoHubService } from 'src/app/services/desmo-hub/desmo-hub.service';
+import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map, Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,7 +7,6 @@ import {
   BreakpointObserver,
   BreakpointState,
 } from '@angular/cdk/layout';
-import { ethers } from 'ethers';
 
 type EventType = 'CREATE' | 'DISABLE' | 'ENABLE' | 'RETRIEVE';
 const eventMessages: Record<EventType, string> = {
@@ -27,7 +26,7 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
   isSmallScreen: boolean = false;
 
   constructor(
-    private desmoHub: DesmoHubService,
+    private desmold: DesmoldSDKService,
     private snackBar: MatSnackBar,
     private breakpointObserver: BreakpointObserver
   ) {}
@@ -40,21 +39,21 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
         .subscribe(({ matches }) => (this.isSmallScreen = matches))
     );
     this.subscriptions.add(
-      this.desmoHub.tddCreated$.subscribe(() => this.notifyTDDEvent('CREATE'))
+      this.desmold.desmoHub.tddCreated$.subscribe(() => this.notifyTDDEvent('CREATE'))
     );
     this.subscriptions.add(
-      this.desmoHub.tddDisabled$.subscribe(() => this.notifyTDDEvent('DISABLE'))
+      this.desmold.desmoHub.tddDisabled$.subscribe(() => this.notifyTDDEvent('DISABLE'))
     );
     this.subscriptions.add(
-      this.desmoHub.tddEnabled$.subscribe(() => this.notifyTDDEvent('ENABLE'))
+      this.desmold.desmoHub.tddEnabled$.subscribe(() => this.notifyTDDEvent('ENABLE'))
     );
     this.subscriptions.add(
-      this.desmoHub.tddRetrieval$.subscribe(() =>
+      this.desmold.desmoHub.tddRetrieval$.subscribe(() =>
         this.notifyTDDEvent('RETRIEVE')
       )
     );
     this.subscriptions.add(
-      this.desmoHub.transactionSent$.subscribe(() =>
+      this.desmold.desmoHub.transactionSent$.subscribe(() =>
         this.notifySentTransaction()
       )
     );
@@ -76,11 +75,4 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  private increaseHexByOne(hex: string) {
-    return ethers.BigNumber.from(hex).add(1).toHexString();
-  }
-
-  async testFunction() {
-    await this.desmoHub.readStorage();   
-  }
 }

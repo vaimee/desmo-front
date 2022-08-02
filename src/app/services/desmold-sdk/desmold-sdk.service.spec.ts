@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
-import { DesmoHubService } from './desmo-hub.service';
+import { DesmoldSDKService } from './desmold-sdk.service';
 
-describe('DesmoHubService', () => {
-  let service: DesmoHubService;
+describe('DesmoldSDKService', () => {
+  let service: DesmoldSDKService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
-    service = TestBed.inject(DesmoHubService);
+    service = TestBed.inject(DesmoldSDKService);
   });
 
   it('should be created', () => {
