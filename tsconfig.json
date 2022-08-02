@@ -21,7 +21,27 @@
     "lib": [
       "es2020",
       "dom"
-    ]
+    ],
+    "paths": {
+      "crypto": [
+        "./node_modules/crypto-browserify",
+      ],
+      "stream": [
+        "./node_modules/stream-browserify",
+      ],
+      "constants": [
+        "./node_modules/constants-browserify",
+      ],
+      "assert" : [
+        "./node_modules/assert",
+      ],
+      "buffer": [
+        "./node_modules/buffer",
+      ],
+      "process":[
+        "./node_modules/process/browser.js",
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

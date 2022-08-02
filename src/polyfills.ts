@@ -51,4 +51,7 @@ import 'zone.js';  // Included with Angular CLI.
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
+import * as process from 'process';
 (window as any).global = window; // Required by ngx-mapbox-gl
+(window as any).process = process;
+global.Buffer = global.Buffer || require('buffer').Buffer;
