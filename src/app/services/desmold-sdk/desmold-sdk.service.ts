@@ -30,6 +30,8 @@ export class DesmoldSDKService {
   public async connect() {
     if (this.isConnected) return;
 
+    // This needs to be done immediately, in order to prevent other async functions
+    // that may have called connect() to execute the subsequent lines of code!
     this.isConnected = true;
 
     await this.walletSigner.connect();
