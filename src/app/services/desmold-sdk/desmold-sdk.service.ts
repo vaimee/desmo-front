@@ -9,34 +9,44 @@ import {
   providedIn: 'root',
 })
 export class DesmoldSDKService {
-  private walletSigner: WalletSignerMetamask;
-  private _desmoHub!: DesmoHub;
-  private _desmoContract!: DesmoContract;
-  private isConnected: boolean = false;
+  private _walletSigner: WalletSignerMetamask;
+  private _desmoHub: DesmoHub;
+  private _desmoContract: DesmoContract;
+  private _isConnected: boolean = false;
 
-  get desmoHub() {
+  public get desmoHub(): DesmoHub {
     return this._desmoHub;
   }
 
-  get desmoContract() {
+  public get desmoContract(): DesmoContract {
     return this._desmoContract;
+  }
+
+  public get isConnected(): boolean {
+    return this._isConnected;
   }
 
   constructor() {
     // @ts-ignore
-    this.walletSigner = new WalletSignerMetamask(window.ethereum);
+    this._walletSigner = new WalletSignerMetamask(window.ethereum);
+    this._isConnected = this._walletSigner.isConnected;
+
+    this._desmoHub = new DesmoHub(this._walletSigner);
+    this._desmoContract = new DesmoContract(this._walletSigner);
   }
 
   public async connect() {
-    if (this.isConnected) return;
+    if (this.isConnected) {
+      return;
+    }
 
     // This needs to be done immediately, in order to prevent other async functions
     // that may have called connect() to execute the subsequent lines of code!
-    this.isConnected = true;
+    this._isConnected = true;
 
-    await this.walletSigner.connect();
-    this._desmoHub = new DesmoHub(this.walletSigner);
-    this._desmoContract = new DesmoContract(this.walletSigner);
+    await this._walletSigner.connect();
+    this._desmoHub.connect();
+    this._desmoContract.connect();
 
     await this._desmoHub.startListeners();
   }

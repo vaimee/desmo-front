@@ -50,11 +50,6 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
       this.desmold.desmoHub.tddEnabled$.subscribe(() => this.notifyTDDEvent('ENABLE'))
     );
     this.subscriptions.add(
-      this.desmold.desmoHub.tddRetrieval$.subscribe(() =>
-        this.notifyTDDEvent('RETRIEVE')
-      )
-    );
-    this.subscriptions.add(
       this.desmold.desmoHub.transactionSent$.subscribe(() =>
         this.notifySentTransaction()
       )

@@ -122,33 +122,6 @@ export class TddManagerComponent implements OnInit, OnDestroy {
         this.loading = false;
       })
     );
-
-    // tddRetrieval subscription
-    this.subscriptions.add(
-      this.desmold.desmoHub.tddRetrieval$.subscribe((event) => {
-        const rowIndex: number = this.tableData.findIndex(
-          (tdd: TDD) => tdd.address === event.key
-        );
-        if (rowIndex >= 0) {
-          this.tableData[rowIndex].url = event.url;
-          this.tableData[rowIndex].state = !event.disabled;
-        } else {
-          this.tableData.push({
-            address: event.key,
-            url: event.url,
-            state: !event.disabled,
-          });
-        }
-
-        // Save new data inside the cache:
-        localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
-
-        this.dataSource = new MatTableDataSource<TDD>(this.tableData);
-        this.tddRetrieved = true;
-        this.tddEnabled = !event.disabled;
-        this.loading = false;
-      })
-    );
   }
 
   ngOnDestroy(): void {
@@ -193,8 +166,30 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.desmold.desmoHub.getTDD();
         this.loading = true;
+        const retrievedTDD = await this.desmold.desmoHub.getTDD();
+
+        const rowIndex: number = this.tableData.findIndex(
+          (tdd: TDD) => tdd.address === retrievedTDD.owner
+        );
+        if (rowIndex >= 0) {
+          this.tableData[rowIndex].url = retrievedTDD.url;
+          this.tableData[rowIndex].state = !retrievedTDD.disabled;
+        } else {
+          this.tableData.push({
+            address: retrievedTDD.owner,
+            url: retrievedTDD.url,
+            state: !retrievedTDD.disabled,
+          });
+        }
+
+        // Save new data inside the cache:
+        localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
+
+        this.dataSource = new MatTableDataSource<TDD>(this.tableData);
+        this.tddRetrieved = true;
+        this.tddEnabled = !retrievedTDD.disabled;
+        this.loading = false;
       }
     });
   }
