@@ -14,6 +14,15 @@ export class DesmoldSDKService {
   private _desmoContract: DesmoContract;
   private _isConnected: boolean = false;
 
+  constructor() {
+    // @ts-ignore
+    this._walletSigner = new WalletSignerMetamask(window.ethereum);
+    this._isConnected = this._walletSigner.isConnected;
+
+    this._desmoHub = new DesmoHub(this._walletSigner);
+    this._desmoContract = new DesmoContract(this._walletSigner);
+  }
+
   public get desmoHub(): DesmoHub {
     return this._desmoHub;
   }
@@ -24,15 +33,6 @@ export class DesmoldSDKService {
 
   public get isConnected(): boolean {
     return this._isConnected;
-  }
-
-  constructor() {
-    // @ts-ignore
-    this._walletSigner = new WalletSignerMetamask(window.ethereum);
-    this._isConnected = this._walletSigner.isConnected;
-
-    this._desmoHub = new DesmoHub(this._walletSigner);
-    this._desmoContract = new DesmoContract(this._walletSigner);
   }
 
   public async connect() {
