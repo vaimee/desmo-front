@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
+import { ITDD } from '@vaimee/desmold-sdk';
 import { Subscription } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
@@ -122,6 +123,8 @@ export class TddManagerComponent implements OnInit, OnDestroy {
         this.loading = false;
       })
     );
+
+    await this.getTDD();
   }
 
   ngOnDestroy(): void {
@@ -161,36 +164,34 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     });
   }
 
-  getTDD() {
-    const dialogRef = this.dialog.open(ConfirmationDialogComponent);
+  async getTDD(): Promise<void> {
+    let retrievedTDD: ITDD;
+    try {
+      retrievedTDD = await this.desmold.desmoHub.getTDD();
+    } catch (error) {
+      this.tddRetrieved = false;
+      throw new Error(`Unable to retrieve your TDD. You may need to register one. Error message: ${error}`);
+    }
 
-    dialogRef.afterClosed().subscribe(async (result) => {
-      if (result) {
-        this.loading = true;
-        const retrievedTDD = await this.desmold.desmoHub.getTDD();
+    const rowIndex: number = this.tableData.findIndex(
+      (tdd: TDD) => tdd.address === retrievedTDD.owner
+    );
+    if (rowIndex >= 0) {
+      this.tableData[rowIndex].url = retrievedTDD.url;
+      this.tableData[rowIndex].state = !retrievedTDD.disabled;
+    } else {
+      this.tableData.push({
+        address: retrievedTDD.owner,
+        url: retrievedTDD.url,
+        state: !retrievedTDD.disabled,
+      });
+    }
 
-        const rowIndex: number = this.tableData.findIndex(
-          (tdd: TDD) => tdd.address === retrievedTDD.owner
-        );
-        if (rowIndex >= 0) {
-          this.tableData[rowIndex].url = retrievedTDD.url;
-          this.tableData[rowIndex].state = !retrievedTDD.disabled;
-        } else {
-          this.tableData.push({
-            address: retrievedTDD.owner,
-            url: retrievedTDD.url,
-            state: !retrievedTDD.disabled,
-          });
-        }
+    // Save new data inside the cache:
+    localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
 
-        // Save new data inside the cache:
-        localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
-
-        this.dataSource = new MatTableDataSource<TDD>(this.tableData);
-        this.tddRetrieved = true;
-        this.tddEnabled = !retrievedTDD.disabled;
-        this.loading = false;
-      }
-    });
+    this.dataSource = new MatTableDataSource<TDD>(this.tableData);
+    this.tddRetrieved = true;
+    this.tddEnabled = !retrievedTDD.disabled;
   }
 }
