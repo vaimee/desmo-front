@@ -25,7 +25,7 @@ export class TransactionViewerComponent implements OnInit, AfterViewInit, OnDest
 
   constructor(private desmold: DesmoldSDKService) {
     // Check the cache for pre-existing data or initialise with an empty list:
-    const txList: string = localStorage.getItem(this.CACHE_KEY) ?? '[]';
+    const txList: string = sessionStorage.getItem(this.CACHE_KEY) ?? '[]';
     this.tableData = JSON.parse(txList) as ISentTransaction[];
     this.dataSource = new MatTableDataSource<ISentTransaction>(this.tableData);
   }
@@ -41,7 +41,7 @@ export class TransactionViewerComponent implements OnInit, AfterViewInit, OnDest
         );
 
         // Save new data inside the cache:
-        localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
+        sessionStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
       })
     );
   }
@@ -52,7 +52,7 @@ export class TransactionViewerComponent implements OnInit, AfterViewInit, OnDest
       this.tableData
     );
     // Save new data inside the cache:
-    localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
+    sessionStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
   }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
