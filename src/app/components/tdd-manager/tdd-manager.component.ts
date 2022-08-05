@@ -26,7 +26,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
   dataSource: MatTableDataSource<TDD>;
 
   tddRetrieved: boolean = false;
-  tddEnabled: boolean = true;
+  tddEnabled: boolean = false;
   loading: boolean = false;
   private subscriptions: Subscription = new Subscription();
 
@@ -48,20 +48,11 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     // tddCreated subscription
     this.subscriptions.add(
       this.desmold.desmoHub.tddCreated$.subscribe((event) => {
-        const rowIndex: number = this.tableData.findIndex(
-          (tdd: TDD) => tdd.address === event.key
-        );
-        if (rowIndex >= 0) {
-          this.tableData[rowIndex].url = event.url;
-          this.tableData[rowIndex].state = !event.disabled;
-        } else {
-          this.tableData.push({
-            address: event.key,
-            url: event.url,
-            state: !event.disabled,
-          });
+        this.tableData[0] = {
+          address: event.key,
+          url: event.url,
+          state: !event.disabled
         }
-
         // Save new data inside the cache:
         localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
 
@@ -75,17 +66,10 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     // tddDisabled subscription
     this.subscriptions.add(
       this.desmold.desmoHub.tddDisabled$.subscribe((event) => {
-        const rowIndex: number = this.tableData.findIndex(
-          (tdd: TDD) => tdd.address === event.key
-        );
-        if (rowIndex >= 0) {
-          this.tableData[rowIndex].state = false;
-        } else {
-          this.tableData.push({
-            address: event.key,
-            url: event.url,
-            state: false,
-          });
+        this.tableData[0] = {
+          address: event.key,
+          url: event.url,
+          state: false,
         }
 
         // Save new data inside the cache:
@@ -101,17 +85,10 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     // tddEnabled subscription
     this.subscriptions.add(
       this.desmold.desmoHub.tddEnabled$.subscribe((event) => {
-        const rowIndex: number = this.tableData.findIndex(
-          (tdd: TDD) => tdd.address === event.key
-        );
-        if (rowIndex >= 0) {
-          this.tableData[rowIndex].state = true;
-        } else {
-          this.tableData.push({
-            address: event.key,
-            url: event.url,
-            state: true,
-          });
+        this.tableData[0] = {
+          address: event.key,
+          url: event.url,
+          state: true,
         }
 
         // Save new data inside the cache:
@@ -173,19 +150,11 @@ export class TddManagerComponent implements OnInit, OnDestroy {
       throw new Error(`Unable to retrieve your TDD. You may need to register one. Error message: ${error}`);
     }
 
-    const rowIndex: number = this.tableData.findIndex(
-      (tdd: TDD) => tdd.address === retrievedTDD.owner
-    );
-    if (rowIndex >= 0) {
-      this.tableData[rowIndex].url = retrievedTDD.url;
-      this.tableData[rowIndex].state = !retrievedTDD.disabled;
-    } else {
-      this.tableData.push({
-        address: retrievedTDD.owner,
-        url: retrievedTDD.url,
-        state: !retrievedTDD.disabled,
-      });
-    }
+    this.tableData[0] = {
+      address: retrievedTDD.owner,
+      url: retrievedTDD.url,
+      state: !retrievedTDD.disabled,
+    };
 
     // Save new data inside the cache:
     localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
