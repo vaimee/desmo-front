@@ -177,8 +177,9 @@ export class QueryPageComponent {
     console.log(this.query);
     this.desmold.connect();
 
+    const eventPromise = firstValueFrom(this.desmold.desmoHub.requestID$);
     await this.desmold.desmoHub.getNewRequestID();
-    const event = await firstValueFrom(this.desmold.desmoHub.requestID$);
+    const event = await eventPromise;
 
     await this.desmold.desmoContract.buyQuery(event.requestID, JSON.stringify(this.query), environment.iExecDAppAddress);
   }
