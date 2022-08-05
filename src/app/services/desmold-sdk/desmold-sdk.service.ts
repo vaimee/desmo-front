@@ -23,7 +23,7 @@ export class DesmoldSDKService {
     this._desmoContract = new DesmoContract(this._walletSigner);
 
     // @ts-ignore
-    window.ethereum.on('chainChanged', (_chainId: number) => window.location.reload());
+    window.ethereum.on('chainChanged', (chainId: number) => window.location.reload());
     // @ts-ignore
     window.ethereum.on('accountsChanged', (accounts: Array<string>) => window.location.reload());
   }

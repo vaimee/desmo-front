@@ -1,3 +1,5 @@
+import { IGeoAltitudeRange } from './../../interface/IQuery';
+import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { Component } from '@angular/core';
 import IQuery, {
   defaultIQuery,
@@ -20,6 +22,8 @@ import { MatStepper } from '@angular/material/stepper';
 import { Map as MapboxMap } from 'mapbox-gl';
 import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { MatRadioChange } from '@angular/material/radio';
+import { firstValueFrom } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 let filterMap: MapboxMap;
 const drawPolygon: MapboxDraw = new MapboxDraw({
@@ -43,7 +47,8 @@ export class QueryPageComponent {
   query: IQuery = defaultIQuery();
 
   propertyFormGroup: FormGroup = this._fb.group({
-    propertyIRI: ['', [Validators.required, this.validIRIValidator()]],
+    // propertyIRI: ['', [Validators.required, this.validIRIValidator()]],
+    propertyIRI: ['', [Validators.required]],
     unitIRI: ['', [Validators.required, this.validIRIValidator()]],
     datatype: [
       RequestedDataType.Integer,
@@ -66,7 +71,7 @@ export class QueryPageComponent {
   prefixesFormArray: FormArray = this._fb.array([]);
   prefixNames: string[] = [];
 
-  constructor(private _fb: FormBuilder) {}
+  constructor(private _fb: FormBuilder, private desmold: DesmoldSDKService) {}
 
   onFilterMapLoad(map: MapboxMap): void {
     filterMap = map;
@@ -112,7 +117,7 @@ export class QueryPageComponent {
     return this.filtersFormGroup.value.geoType === 'none';
   }
 
-  submitQuery() {
+  async submitQuery() {
     this.query = defaultIQuery();
 
     // Prefix list
@@ -136,13 +141,14 @@ export class QueryPageComponent {
     // GEO filter
     // Altitude range
     const {hasMin, hasMax} = this.filtersFormGroup.value.geoAltitudeLimits;
-    const {lowerBound, upperBound} = this.filtersFormGroup.value.geoAltitudeRange;
+    const altitudeBounds = this.filtersFormGroup.value.geoAltitudeRange;
     if (hasMin || hasMax) {
+      this.query.geoFilter!.altitudeRange = {} as IGeoAltitudeRange;
       if (hasMin) {
-        this.query.geoFilter!.altitudeRange!.min = lowerBound;
+        this.query.geoFilter!.altitudeRange!.min = altitudeBounds.min;
       }
       if (hasMax) {
-        this.query.geoFilter!.altitudeRange!.max = upperBound;
+        this.query.geoFilter!.altitudeRange!.max = altitudeBounds.max;
       }
       this.query.geoFilter!.altitudeRange!.unit = "https://qudt.org/vocab/unit/M";
     }
@@ -169,6 +175,12 @@ export class QueryPageComponent {
 
     // TODO: other parts of the query...
     console.log(this.query);
+    this.desmold.connect();
+
+    await this.desmold.desmoHub.getNewRequestID();
+    const event = await firstValueFrom(this.desmold.desmoHub.requestID$);
+
+    await this.desmold.desmoContract.buyQuery(event.requestID, JSON.stringify(this.query), environment.iExecDAppAddress);
   }
 
   resetQueryBuilder(stepperObject: MatStepper) {
@@ -181,6 +193,9 @@ export class QueryPageComponent {
 
     // The geoType must be either 'none', 'polygon' or 'circle'
     this.filtersFormGroup.controls['geoType'].setValue('none');
+
+    this.filtersFormGroup.get('geoAltitudeRange.min')?.setValue(0);
+    this.filtersFormGroup.get('geoAltitudeRange.max')?.setValue(0);
   }
 
   handlePrefixes(event: StepperSelectionEvent) {

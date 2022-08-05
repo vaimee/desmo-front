@@ -3,20 +3,38 @@
   <mat-card>
     <mat-card-content>
       <mat-card-title>Build your query</mat-card-title>
-      <span style="color: blue">Hint: remember that you can use prefixes to shorten the IRIs!</span>
+      <span style="color: blue"
+        >Hint: remember that you can use prefixes to shorten the IRIs!</span
+      >
 
-      <mat-vertical-stepper linear animationDuration="1500" (selectionChange)="handlePrefixes($event)" #stepper>
+      <mat-vertical-stepper
+        linear
+        animationDuration="1500"
+        (selectionChange)="handlePrefixes($event)"
+        #stepper
+      >
         <!-- STEP 1: property -->
         <mat-step [stepControl]="propertyFormGroup" [optional]="false">
           <form [formGroup]="propertyFormGroup">
             <ng-template matStepLabel>Property</ng-template>
             <div>
               <mat-form-field>
-                <mat-label>Insert property IRI:</mat-label>
-                <input matInput type="text" formControlName="propertyIRI" placeholder="Property IRI here..."
-                  #propertyIRIinput />
-                <button mat-icon-button matSuffix color="accent" aria-label="Clear field"
-                  *ngIf="propertyIRIinput.value != ''" (click)="clearPropertyControl('propertyIRI')">
+                <mat-label>Insert property name:</mat-label>
+                <input
+                  matInput
+                  type="text"
+                  formControlName="propertyIRI"
+                  placeholder="Property name here..."
+                  #propertyIRIinput
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  color="accent"
+                  aria-label="Clear field"
+                  *ngIf="propertyIRIinput.value != ''"
+                  (click)="clearPropertyControl('propertyIRI')"
+                >
                   <mat-icon>clear</mat-icon>
                 </button>
               </mat-form-field>
@@ -24,22 +42,44 @@
             <div style="margin-top: 16px">
               <mat-form-field>
                 <mat-label>Insert unit IRI:</mat-label>
-                <input matInput type="text" formControlName="unitIRI" placeholder="Unit IRI here..." #unitIRIinput />
-                <button mat-icon-button matSuffix color="accent" aria-label="Clear field"
-                  *ngIf="unitIRIinput.value != ''" (click)="clearPropertyControl('unitIRI')">
+                <input
+                  matInput
+                  type="text"
+                  formControlName="unitIRI"
+                  placeholder="Unit IRI here..."
+                  #unitIRIinput
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  color="accent"
+                  aria-label="Clear field"
+                  *ngIf="unitIRIinput.value != ''"
+                  (click)="clearPropertyControl('unitIRI')"
+                >
                   <mat-icon>clear</mat-icon>
                 </button>
               </mat-form-field>
             </div>
             <div style="margin-top: 16px" [formGroup]="propertyFormGroup">
-
               <mat-label class="margin-right">Result datatype:</mat-label>
 
-              <mat-radio-group formControlName="datatype" name="datatype" aria-label="Data type" multiple="false"
-                required>
-                <mat-radio-button class="margin-right" [value]="0">Integer</mat-radio-button>
-                <mat-radio-button class="margin-right" [value]="1">Decimal</mat-radio-button>
-                <mat-radio-button class="margin-right" [value]="2">Boolean</mat-radio-button>
+              <mat-radio-group
+                formControlName="datatype"
+                name="datatype"
+                aria-label="Data type"
+                multiple="false"
+                required
+              >
+                <mat-radio-button class="margin-right" [value]="0"
+                  >Integer</mat-radio-button
+                >
+                <mat-radio-button class="margin-right" [value]="1"
+                  >Decimal</mat-radio-button
+                >
+                <mat-radio-button class="margin-right" [value]="2"
+                  >Boolean</mat-radio-button
+                >
                 <mat-radio-button [value]="3">String</mat-radio-button>
               </mat-radio-group>
             </div>
@@ -59,11 +99,20 @@
             <div>
               <mat-form-field>
                 <mat-label>Insert JsonPath filter expression:</mat-label>
-                <span matPrefix>$.</span>
-                <input matInput placeholder="JsonPath filter here..." formControlName="jsonPathExpression"
-                  #jsonPathinput />
-                <button mat-icon-button matSuffix color="accent" aria-label="Clear field"
-                  *ngIf="jsonPathinput.value != ''" (click)="clearFilterControl('jsonPathExpression')">
+                <input
+                  matInput
+                  placeholder="JsonPath filter here..."
+                  formControlName="jsonPathExpression"
+                  #jsonPathinput
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  color="accent"
+                  aria-label="Clear field"
+                  *ngIf="jsonPathinput.value != ''"
+                  (click)="clearFilterControl('jsonPathExpression')"
+                >
                   <mat-icon>clear</mat-icon>
                 </button>
               </mat-form-field>
@@ -71,10 +120,20 @@
             <div style="margin-top: 16px">
               <mat-form-field>
                 <mat-label>Insert dynamic filter expression:</mat-label>
-                <input matInput placeholder="Dynamic filter here..." formControlName="dynamicFilterExpression"
-                  #dynamicFilterinput />
-                <button mat-icon-button matSuffix color="accent" aria-label="Clear field"
-                  *ngIf="dynamicFilterinput.value != ''" (click)="clearPropertyControl('dynamicFilterExpression')">
+                <input
+                  matInput
+                  placeholder="Dynamic filter here..."
+                  formControlName="dynamicFilterExpression"
+                  #dynamicFilterinput
+                />
+                <button
+                  mat-icon-button
+                  matSuffix
+                  color="accent"
+                  aria-label="Clear field"
+                  *ngIf="dynamicFilterinput.value != ''"
+                  (click)="clearPropertyControl('dynamicFilterExpression')"
+                >
                   <mat-icon>clear</mat-icon>
                 </button>
               </mat-form-field>
@@ -98,20 +157,42 @@
             <fieldset>
               <legend>Altitude range:</legend>
               <section formGroupName="geoAltitudeLimits">
-                <mat-label class="margin-right">Limits (in meters above sea level):</mat-label>
-                <mat-checkbox class="margin-right" #hasMin formControlName="hasMin">Lower bound</mat-checkbox>
-                <mat-checkbox value="polygon" #hasMax formControlName="hasMax">Upper bound</mat-checkbox>
+                <mat-label class="margin-right"
+                  >Limits (in meters above sea level):</mat-label
+                >
+                <mat-checkbox
+                  class="margin-right"
+                  #hasMin
+                  formControlName="hasMin"
+                  >Lower bound</mat-checkbox
+                >
+                <mat-checkbox value="polygon" #hasMax formControlName="hasMax"
+                  >Upper bound</mat-checkbox
+                >
               </section>
               <section formGroupName="geoAltitudeRange">
                 <mat-form-field *ngIf="hasMin.checked" class="margin-right">
-                  <input matInput type="number" placeholder="Lower bound" [value]="0" formControlName="min">
+                  <input
+                    matInput
+                    type="number"
+                    placeholder="Lower bound"
+                    [value]="0"
+                    formControlName="min"
+                  />
                 </mat-form-field>
                 <mat-form-field *ngIf="hasMax.checked">
-                  <input matInput type="number" placeholder="Upper bound" [value]="0" formControlName="max">
+                  <input
+                    matInput
+                    type="number"
+                    placeholder="Upper bound"
+                    [value]="0"
+                    formControlName="max"
+                  />
                 </mat-form-field>
                 <div
                   *ngIf="filtersFormGroup.errors?.['maxGreaterThanMin'] && (filtersFormGroup.touched || filtersFormGroup.dirty)"
-                  style="color: red">
+                  style="color: red"
+                >
                   The lower bound must be strictly less than the upper bound.
                 </div>
               </section>
@@ -120,17 +201,33 @@
             <fieldset>
               <legend>Region:</legend>
               <section>
-                <mat-label class="margin-right">Type of region filter:</mat-label>
-                <mat-radio-group formControlName="geoType" name="type" aria-label="Type of geographical filter"
-                  multiple="false" required (change)="handleGeoTypeChanged($event)">
-                  <mat-radio-button class="margin-right" value="none">None</mat-radio-button>
-                  <mat-radio-button class="margin-right" value="polygon">Polygon</mat-radio-button>
+                <mat-label class="margin-right"
+                  >Type of region filter:</mat-label
+                >
+                <mat-radio-group
+                  formControlName="geoType"
+                  name="type"
+                  aria-label="Type of geographical filter"
+                  multiple="false"
+                  required
+                  (change)="handleGeoTypeChanged($event)"
+                >
+                  <mat-radio-button class="margin-right" value="none"
+                    >None</mat-radio-button
+                  >
+                  <mat-radio-button class="margin-right" value="polygon"
+                    >Polygon</mat-radio-button
+                  >
                   <mat-radio-button value="circle">Circle</mat-radio-button>
                 </mat-radio-group>
               </section>
-              <mgl-map [style]="'mapbox://styles/mapbox/satellite-streets-v11'" [zoom]="[10]"
-                [center]="[11.346476554870605, 44.49420166015625]" (mapLoad)="onFilterMapLoad($event)"
-                *ngIf="!isSelectedGeoTypeNone()">
+              <mgl-map
+                [style]="'mapbox://styles/mapbox/satellite-streets-v11'"
+                [zoom]="[10]"
+                [center]="[11.346476554870605, 44.49420166015625]"
+                (mapLoad)="onFilterMapLoad($event)"
+                *ngIf="!isSelectedGeoTypeNone()"
+              >
               </mgl-map>
             </fieldset>
 
@@ -149,30 +246,7 @@
         <mat-step [stepControl]="filtersFormGroup" [optional]="true">
           <form [formGroup]="filtersFormGroup">
             <ng-template matStepLabel>TIME filter</ng-template>
-            <div>
-              <mat-form-field>
-                <mat-label>Insert JsonPath filter expression:</mat-label>
-                <span matPrefix>$.</span>
-                <input matInput placeholder="JsonPath filter here..." formControlName="jsonPathExpression"
-                  #jsonPathinput />
-                <button mat-icon-button matSuffix color="accent" aria-label="Clear field"
-                  *ngIf="jsonPathinput.value != ''" (click)="clearFilterControl('jsonPathExpression')">
-                  <mat-icon>clear</mat-icon>
-                </button>
-              </mat-form-field>
-            </div>
-            <div style="margin-top: 16px">
-              <mat-form-field>
-                <mat-label>Insert dynamic filter expression:</mat-label>
-                <input matInput placeholder="Dynamic filter here..." formControlName="dynamicFilterExpression"
-                  #dynamicFilterinput />
-                <button mat-icon-button matSuffix color="accent" aria-label="Clear field"
-                  *ngIf="dynamicFilterinput.value != ''" (click)="clearPropertyControl('dynamicFilterExpression')">
-                  <mat-icon>clear</mat-icon>
-                </button>
-              </mat-form-field>
-            </div>
-
+            <span>Working in progress...</span>
             <div style="margin-top: 16px">
               <button mat-button mat-stroked-button matStepperPrevious>
                 Prev. step
@@ -193,29 +267,41 @@
           <div *ngIf="prefixesFormArray.length > 0">
             <h4>Please, provide the full version of the prefixes you used:</h4>
             <form>
-              <div *ngFor="
+              <div
+                *ngFor="
                   let prefixCtrl of prefixesFormArray.controls;
                   let i = index
-                ">
+                "
+              >
                 <mat-form-field>
                   <span matPrefix>{{ prefixNames[i] }}:&nbsp;&lt;</span>
-                  <input matInput placeholder="Extended IRI here..." [formControl]="getPrefixControl(i)" />
-                  <button mat-icon-button matSuffix color="accent" aria-label="Clear field"
-                    *ngIf="prefixesFormArray.controls[i].value != ''" (click)="clearPrefixControl(i)">
+                  <input
+                    matInput
+                    placeholder="Extended IRI here..."
+                    [formControl]="getPrefixControl(i)"
+                  />
+                  <button
+                    mat-icon-button
+                    matSuffix
+                    color="accent"
+                    aria-label="Clear field"
+                    *ngIf="prefixesFormArray.controls[i].value != ''"
+                    (click)="clearPrefixControl(i)"
+                  >
                     <mat-icon>clear</mat-icon>
                   </button>
                   <span matSuffix>&gt;</span>
                 </mat-form-field>
               </div>
-              <div style="margin-top: 16px">
-                <button mat-button mat-stroked-button matStepperPrevious>
-                  Prev. step
-                </button>
-                <button mat-button mat-stroked-button matStepperNext>
-                  Next step
-                </button>
-              </div>
             </form>
+          </div>
+          <div style="margin-top: 16px">
+            <button mat-button mat-stroked-button matStepperPrevious>
+              Prev. step
+            </button>
+            <button mat-button mat-stroked-button matStepperNext>
+              Next step
+            </button>
           </div>
         </mat-step>
 
@@ -225,10 +311,19 @@
           <h3>You are now done!</h3>
 
           <button mat-stroked-button matStepperPrevious>Prev. step</button>
-          <button mat-stroked-button color="accent" (click)="resetQueryBuilder(stepper)">
+          <button
+            mat-stroked-button
+            color="accent"
+            (click)="resetQueryBuilder(stepper)"
+          >
             Reset
           </button>
-          <button mat-stroked-button color="primary" type="submit" (click)="submitQuery()">
+          <button
+            mat-stroked-button
+            color="primary"
+            type="submit"
+            (click)="submitQuery()"
+          >
             Execute query
           </button>
         </mat-step>
