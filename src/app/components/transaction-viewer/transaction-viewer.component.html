@@ -4,6 +4,14 @@
   </mat-card-header>
   <mat-divider inset></mat-divider>
   <mat-card-content class="card-content">
+    <button
+      class="Register-button"
+      mat-raised-button
+      color="primary"
+      (click)="clearCache()"
+    >
+      Clear transactions cache
+    </button>
     <div class="mat-elevation-z4">
       <table mat-table [dataSource]="dataSource" class="full-width">
         <!-- Operation Column -->

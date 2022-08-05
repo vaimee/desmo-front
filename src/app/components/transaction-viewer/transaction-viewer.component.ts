@@ -46,6 +46,14 @@ export class TransactionViewerComponent implements OnInit, AfterViewInit, OnDest
     );
   }
 
+  clearCache() {
+    this.tableData = [];
+    this.dataSource = new MatTableDataSource<ISentTransaction>(
+      this.tableData
+    );
+    // Save new data inside the cache:
+    localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
+  }
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
