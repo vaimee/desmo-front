@@ -21,6 +21,11 @@ export class DesmoldSDKService {
 
     this._desmoHub = new DesmoHub(this._walletSigner);
     this._desmoContract = new DesmoContract(this._walletSigner);
+
+    // @ts-ignore
+    window.ethereum.on('chainChanged', (_chainId: number) => window.location.reload());
+    // @ts-ignore
+    window.ethereum.on('accountsChanged', (accounts: Array<string>) => window.location.reload());
   }
 
   public get desmoHub(): DesmoHub {
@@ -37,6 +42,10 @@ export class DesmoldSDKService {
 
   public async connect() {
     if (this.isConnected) {
+      // @ts-ignore
+      if (!this._desmoHub.isListening) {
+        await this._desmoHub.startListeners();
+      }
       return;
     }
 
