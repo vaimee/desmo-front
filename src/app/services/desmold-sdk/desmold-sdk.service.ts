@@ -42,7 +42,6 @@ export class DesmoldSDKService {
 
   public async connect() {
     if (this.isConnected) {
-      // @ts-ignore
       if (!this._desmoHub.isListening) {
         await this._desmoHub.startListeners();
       }
