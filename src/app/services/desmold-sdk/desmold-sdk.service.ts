@@ -42,8 +42,8 @@ export class DesmoldSDKService {
 
   public async connect() {
     if (this.isConnected) {
-      if (!this._desmoHub.isListening) {
-        await this._desmoHub.startListeners();
+      if (!this.desmoHub.isListening) {
+        await this.desmoHub.startListeners();
       }
       return;
     }
@@ -53,13 +53,15 @@ export class DesmoldSDKService {
     this._isConnected = true;
 
     await this._walletSigner.connect();
-    this._desmoHub.connect();
-    this._desmoContract.connect();
+    this.desmoHub.connect();
+    this.desmoContract.connect();
 
-    await this._desmoHub.startListeners();
+    await this.desmoHub.startListeners();
   }
 
   ngOnDestroy() {
-    this.desmoHub.stopListeners();
+    if (this.desmoHub.isListening) {
+      this.desmoHub.stopListeners();
+    }
   }
 }
