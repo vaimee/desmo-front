@@ -53,9 +53,11 @@
     </table>
 
     <mat-paginator
+      [length]="amountOfTDDs"
+      [pageSize]="5"
       [pageSizeOptions]="[5, 10, 20]"
       showFirstLastButtons
-      aria-label="Select page of transactions"
+      aria-label="Select page of TDDs"
     >
     </mat-paginator>
   </div>
