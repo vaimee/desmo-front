@@ -7,6 +7,7 @@ interface TDD {
   address: string;
   url: string;
   state: boolean;
+  score: number;
 }
 
 @Component({
@@ -17,7 +18,7 @@ interface TDD {
 export class StatisticsPageComponent {
   private readonly CACHE_KEY: string = 'completeTddList';
 
-  displayedColumns: string[] = ['address', 'url', 'state'];
+  displayedColumns: string[] = ['address', 'url', 'state', 'score'];
   tableData: TDD[];
   dataSource: MatTableDataSource<TDD>;
 
@@ -31,10 +32,11 @@ export class StatisticsPageComponent {
     this.dataSource = new MatTableDataSource<TDD>(this.tableData);
   }
 
-  ngOnInit(): void {
-    // TODO: implement a mechanism in the SDK to retrieve the complete list of TDDs
+  async ngOnInit(): Promise<void> {
     // this.tableData = this.desmold.desmoHub.getCompleteListOfTDDs();
+    const list = await this.desmold.desmoHub.getTDDList()
 
+    this.tableData = list.map(({owner, disabled, score, url}) => ({address: owner, url, state: !disabled, score: score.toNumber()}));
     // Save new data inside the cache:
     localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
 
