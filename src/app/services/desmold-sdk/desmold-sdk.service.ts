@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {
-  DesmoContract,
+  Desmo,
   DesmoHub,
   WalletSignerMetamask,
 } from '@vaimee/desmold-sdk';
@@ -11,7 +11,7 @@ import {
 export class DesmoldSDKService {
   private _walletSigner: WalletSignerMetamask;
   private _desmoHub: DesmoHub;
-  private _desmoContract: DesmoContract;
+  private _desmoContract: Desmo;
   private _isConnected: boolean = false;
 
   constructor() {
@@ -20,7 +20,7 @@ export class DesmoldSDKService {
     this._isConnected = this._walletSigner.isConnected;
 
     this._desmoHub = new DesmoHub(this._walletSigner);
-    this._desmoContract = new DesmoContract(this._walletSigner);
+    this._desmoContract = new Desmo(this._walletSigner);
 
     // @ts-ignore
     window.ethereum.on('chainChanged', (chainId: number) => window.location.reload());
@@ -32,7 +32,7 @@ export class DesmoldSDKService {
     return this._desmoHub;
   }
 
-  public get desmoContract(): DesmoContract {
+  public get desmoContract(): Desmo {
     return this._desmoContract;
   }
 
