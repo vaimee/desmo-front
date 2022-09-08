@@ -11,13 +11,6 @@ import { Subscription, tap } from 'rxjs';
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { StatisticsDataSource } from './statistics-datasource';
 
-export interface TDD {
-  address: string;
-  url: string;
-  state: boolean;
-  score: number;
-}
-
 @Component({
   selector: 'app-statistics-page',
   templateUrl: './statistics-page.component.html',
@@ -57,7 +50,7 @@ export class StatisticsPageComponent
   async ngOnInit(): Promise<void> {
     this.subscriptions.add(
       this.dataSource.error$.subscribe(() => this.showErrorToast())
-    )
+    );
 
     this.amountOfTDDs = (
       await this.desmold.desmoHub.getTDDStorageLength()

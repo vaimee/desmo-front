@@ -1,7 +1,13 @@
 import { CollectionViewer, DataSource } from '@angular/cdk/collections';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
-import { TDD } from './statistics-page.component';
+
+interface TDD {
+  address: string;
+  url: string;
+  state: boolean;
+  score: number;
+}
 
 export class StatisticsDataSource implements DataSource<TDD> {
   private tddSubject = new BehaviorSubject<TDD[]>([]);
@@ -32,7 +38,12 @@ export class StatisticsDataSource implements DataSource<TDD> {
     const stop = start + pageSize;
     try {
       const rawTDDs = await this.desmold.desmoHub.getTDDList(start, stop);
-      const tdds = rawTDDs.map(({owner, disabled, score, url}) => ({address: owner, url, state: !disabled, score: score.toNumber()}));
+      const tdds = rawTDDs.map(({ owner, disabled, score, url }) => ({
+        address: owner,
+        url,
+        state: !disabled,
+        score: score.toNumber(),
+      }));
 
       this.tddSubject.next(tdds); // Shows results in the table
     } catch (error) {
