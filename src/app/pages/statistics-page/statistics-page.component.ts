@@ -6,7 +6,6 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
 import { Subscription, tap } from 'rxjs';
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { StatisticsDataSource } from './statistics-datasource';
@@ -47,7 +46,7 @@ export class StatisticsPageComponent
 
   async ngOnInit(): Promise<void> {
     this.amountOfTDDs = (await this.desmold.desmoHub.getTDDStorageLength()).toNumber();
-    await this.dataSource.loadTDDs(0, 5);
+    await this.dataSource.loadTDDs(0, this.paginator.pageSize);
   }
 
   async loadTDDsPage() {
