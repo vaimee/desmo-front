@@ -6,6 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { Subscription, tap } from 'rxjs';
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { StatisticsDataSource } from './statistics-datasource';
@@ -33,9 +34,18 @@ export class StatisticsPageComponent
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
 
-  constructor(private desmold: DesmoldSDKService) {
+  constructor(
+    private desmold: DesmoldSDKService,
+    private snackBar: MatSnackBar
+  ) {
     this.dataSource = new StatisticsDataSource(this.desmold);
     this.subscriptions = new Subscription();
+  }
+
+  private showErrorToast() {
+    this.snackBar.open('Error while loading TDDs...', 'Dismiss', {
+      duration: 3000,
+    });
   }
 
   ngAfterViewInit() {
@@ -45,7 +55,13 @@ export class StatisticsPageComponent
   }
 
   async ngOnInit(): Promise<void> {
-    this.amountOfTDDs = (await this.desmold.desmoHub.getTDDStorageLength()).toNumber();
+    this.subscriptions.add(
+      this.dataSource.error$.subscribe(() => this.showErrorToast())
+    )
+
+    this.amountOfTDDs = (
+      await this.desmold.desmoHub.getTDDStorageLength()
+    ).toNumber();
     await this.dataSource.loadTDDs(0, this.paginator.pageSize);
   }
 
