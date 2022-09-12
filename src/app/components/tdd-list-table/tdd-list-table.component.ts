@@ -2,7 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Output, OnDestroy, OnInit, View
 import { MatPaginator } from '@angular/material/paginator';
 import { Subscription, tap } from 'rxjs';
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
-import { StatisticsDataSource } from './statistics-datasource';
+import { TDDStatisticsDataSource } from './tdd-statistics-datasource';
 
 @Component({
   selector: 'app-tdd-list-table',
@@ -11,7 +11,7 @@ import { StatisticsDataSource } from './statistics-datasource';
 })
 export class TddListTableComponent implements AfterViewInit, OnInit, OnDestroy {
   displayedColumns: string[] = ['address', 'url', 'state', 'score'];
-  dataSource: StatisticsDataSource;
+  dataSource: TDDStatisticsDataSource;
   amountOfTDDs: number = 0;
 
   private subscriptions: Subscription;
@@ -22,7 +22,7 @@ export class TddListTableComponent implements AfterViewInit, OnInit, OnDestroy {
   paginator!: MatPaginator;
 
   constructor(private desmold: DesmoldSDKService) {
-    this.dataSource = new StatisticsDataSource(this.desmold);
+    this.dataSource = new TDDStatisticsDataSource(this.desmold);
     this.subscriptions = new Subscription();
   }
 
