@@ -38,6 +38,7 @@ import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.serv
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
 import { TddListTableComponent } from './components/tdd-list-table/tdd-list-table.component';
+import { TransactionListTableComponent } from './components/transaction-list-table/transaction-list-table.component';
 
 const mapboxToken =
   'pk.eyJ1IjoiaW9zb25vcGVyc2lhIiwiYSI6ImNsNjBzYjVldjAwNWszaW1rNWZtdTRuNjkifQ.2lGOSvqt5lahEfZYLa3eRg';
@@ -53,6 +54,7 @@ const mapboxToken =
     TddManagerComponent,
     TransactionViewerComponent,
     TddListTableComponent,
+    TransactionListTableComponent,
   ],
   imports: [
     BrowserModule,
