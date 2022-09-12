@@ -35,8 +35,9 @@ import { TransactionViewerComponent } from './components/transaction-viewer/tran
 import { MatStepperModule } from '@angular/material/stepper';
 import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
-import {MatTabsModule} from '@angular/material/tabs';
-import {MatTreeModule} from '@angular/material/tree';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTreeModule } from '@angular/material/tree';
+import { TddListTableComponent } from './components/tdd-list-table/tdd-list-table.component';
 
 const mapboxToken =
   'pk.eyJ1IjoiaW9zb25vcGVyc2lhIiwiYSI6ImNsNjBzYjVldjAwNWszaW1rNWZtdTRuNjkifQ.2lGOSvqt5lahEfZYLa3eRg';
@@ -51,6 +52,7 @@ const mapboxToken =
     ConfirmationDialogComponent,
     TddManagerComponent,
     TransactionViewerComponent,
+    TddListTableComponent,
   ],
   imports: [
     BrowserModule,
