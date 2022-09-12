@@ -35,3 +35,9 @@ mgl-map {
 .margin-right {
   margin-right: 12px;
 }
+
+table.mat-table {
+  top: 10px;
+  display: table;
+  width: 100%;
+}

@@ -330,4 +330,45 @@
       </mat-vertical-stepper>
     </mat-card-content>
   </mat-card>
+<mat-card *ngIf = '(this.result.arrived || this.result.loading)'>
+    <mat-card-footer>
+    <mat-progress-bar mode="indeterminate" *ngIf= 'this.result.loading' ></mat-progress-bar
+  ></mat-card-footer>
+  <mat-card-content *ngIf = 'this.result.arrived'>
+    <h2>Query Result</h2>
+    <div *ngIf = 'this.result.error'>
+      <h3>Something went wrong!</h3>
+      <p>{{this.result.error}}</p>
+    </div>
+    <div *ngIf = '!this.result.error'>
+
+      <mat-tab-group mat-stretch-tabs>
+        <mat-tab label="Data">
+          <table mat-table [dataSource]="resultTable" class="mat-elevation-z8">
+            <ng-container matColumnDef="property">
+              <th mat-header-cell *matHeaderCellDef> Property name</th>
+              <td mat-cell *matCellDef="let resultTable"> {{resultTable.property}} </td>
+            </ng-container>
+            <ng-container matColumnDef="value">
+              <th mat-header-cell *matHeaderCellDef> Value </th>
+              <td mat-cell *matCellDef="let resultTable"> {{resultTable.value}} </td>
+            </ng-container>
+            <ng-container matColumnDef="unit">
+              <th mat-header-cell *matHeaderCellDef> Unit </th>
+              <td mat-cell *matCellDef="let resultTable"> {{resultTable.unit}} </td>
+            </ng-container>
+            <ng-container matColumnDef="time">
+              <th mat-header-cell *matHeaderCellDef> Elapsed Time </th>
+              <td mat-cell *matCellDef="let resultTable"> {{resultTable.time}} ms </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+
+        </mat-tab>
+        <mat-tab label="Requested Query"><pre>{{this.result.query | json}}</pre>  </mat-tab>
+      </mat-tab-group>
+    </div>
+  </mat-card-content>
+</mat-card>
 </div>

@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  iExecDAppAddress: ''
+  iExecDAppAddress: '0x11391F354CFE180cBc2C92e186e691B63CEB4763'
 };
 
 /*

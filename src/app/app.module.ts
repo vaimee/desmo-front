@@ -35,6 +35,8 @@ import { TransactionViewerComponent } from './components/transaction-viewer/tran
 import { MatStepperModule } from '@angular/material/stepper';
 import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatTreeModule} from '@angular/material/tree';
 
 const mapboxToken =
   'pk.eyJ1IjoiaW9zb25vcGVyc2lhIiwiYSI6ImNsNjBzYjVldjAwNWszaW1rNWZtdTRuNjkifQ.2lGOSvqt5lahEfZYLa3eRg';
@@ -77,6 +79,8 @@ const mapboxToken =
     MatRadioModule,
     MatStepperModule,
     ReactiveFormsModule,
+    MatTabsModule,
+    MatTreeModule,
     NgxMapboxGLModule.withConfig({
       accessToken: mapboxToken, // Optional, can also be set per map (accessToken input of mgl-map)
       // geocoderAccessToken: mapboxToken // Optional, specify if different from the map access token, can also be set per mgl-geocoder (accessToken input of mgl-geocoder)
