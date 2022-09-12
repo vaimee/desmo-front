@@ -9,7 +9,7 @@ interface TDD {
   score: number;
 }
 
-export class StatisticsDataSource implements DataSource<TDD> {
+export class TDDStatisticsDataSource implements DataSource<TDD> {
   private tddSubject = new BehaviorSubject<TDD[]>([]);
   private loadingSubject = new BehaviorSubject<boolean>(false);
   private errorSubject = new Subject<void>();
