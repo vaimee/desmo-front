@@ -56,6 +56,7 @@ export default interface IQuery {
 };
 
 export function defaultIQuery (): IQuery {
+    // comment not implemented features for compatibility
     return {
         prefixList: [],
         property: {
@@ -64,6 +65,7 @@ export function defaultIQuery (): IQuery {
             datatype: RequestedDataType.String
         },
         staticFilter: '',
+        /*
         dynamicFilter: '',
         geoFilter: {
             region: undefined,
@@ -74,5 +76,6 @@ export function defaultIQuery (): IQuery {
             interval: '',
             aggregation: ''
         }
+        */
     };
 }
