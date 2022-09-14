@@ -20,7 +20,7 @@ import { QueryCompletedDataSource } from './query-datasource';
 export class QueryListTableComponent
   implements OnInit, OnDestroy, AfterViewInit
 {
-  displayedColumns: string[] = ['txHash', 'requestID', 'taskID', 'result'];
+  displayedColumns: string[] = ['blockNumber', 'txHash', 'requestID', 'taskID', 'result'];
   dataSource: QueryCompletedDataSource;
   loading = false;
 

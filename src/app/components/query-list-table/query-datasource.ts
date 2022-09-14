@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { Desmo, WalletSignerJsonRpc } from '@vaimee/desmold-sdk';
 
 export interface QueryCompleted {
+  blockNumber: number;
   transactionHash: string;
   requestID: string;
   result: string;
@@ -62,14 +63,17 @@ export class QueryCompletedDataSource implements DataSource<QueryCompleted> {
     const contract = this.desmo['contract'];
     const queryFilter = contract.filters.QueryCompleted();
     const events = await contract.queryFilter(queryFilter);
-    return events.map((event: any) => {
-      return {
-        transactionHash: event.transactionHash,
-        requestID: event.args['result'].requestID,
-        taskID: event.args['result'].taskID,
-        result: event.args['result'].result,
-      } as QueryCompleted;
-    });
+    return events
+      .map((event: any) => {
+        return {
+          blockNumber: event.blockNumber,
+          transactionHash: event.transactionHash,
+          requestID: event.args['result'].requestID,
+          taskID: event.args['result'].taskID,
+          result: event.args['result'].result,
+        } as QueryCompleted;
+      })
+      .reverse();
   }
 
   public getLength() {

@@ -19,7 +19,7 @@ import { TDDEnabledDataSource } from './tddenabled-datasource';
 })
 export class TddEnabledListTableComponent implements OnInit, OnDestroy, AfterViewInit
   {
-    displayedColumns: string[] = ['txHash', 'owner', 'url'];
+    displayedColumns: string[] = ['blockNumber', 'txHash', 'owner', 'url'];
     dataSource: TDDEnabledDataSource;
     loading = false;
 
