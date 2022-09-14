@@ -40,7 +40,8 @@ import { MatTreeModule } from '@angular/material/tree';
 import { TddListTableComponent } from './components/tdd-list-table/tdd-list-table.component';
 import { QueryListTableComponent } from './components/query-list-table/query-list-table.component';
 import { TddCreatedListTableComponent } from './components/tdd-created-list-table/tdd-created-list-table.component';
-import { TddEnabledListTableComponent } from './components/tdd-enabled-list-table/tdd-enabled-list-table.component'
+import { TddEnabledListTableComponent } from './components/tdd-enabled-list-table/tdd-enabled-list-table.component';
+import { TddDisabledListTableComponent } from './components/tdd-disabled-list-table/tdd-disabled-list-table.component';
 
 const mapboxToken =
   'pk.eyJ1IjoiaW9zb25vcGVyc2lhIiwiYSI6ImNsNjBzYjVldjAwNWszaW1rNWZtdTRuNjkifQ.2lGOSvqt5lahEfZYLa3eRg';
@@ -59,6 +60,7 @@ const mapboxToken =
     QueryListTableComponent,
     TddCreatedListTableComponent,
     TddEnabledListTableComponent,
+    TddDisabledListTableComponent,
   ],
   imports: [
     BrowserModule,
