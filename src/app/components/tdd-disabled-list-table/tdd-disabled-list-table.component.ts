@@ -19,7 +19,7 @@ import { TDDDisabledDataSource } from './tdddisabled-datasource';
 })
 export class TddDisabledListTableComponent implements OnInit, OnDestroy, AfterViewInit
   {
-    displayedColumns: string[] = ['txHash', 'owner', 'url'];
+    displayedColumns: string[] = ['blockNumber', 'txHash', 'owner', 'url'];
     dataSource: TDDDisabledDataSource;
     loading = false;
 

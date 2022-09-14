@@ -4,6 +4,7 @@ import { BehaviorSubject, Observable, Subject } from 'rxjs';
 import { DesmoHub, WalletSignerJsonRpc } from '@vaimee/desmold-sdk';
 
 export interface TDDCreated {
+  blockNumber: number;
   transactionHash: string;
   owner: string;
   url: string;
@@ -63,16 +64,19 @@ export class TDDCreatedDataSource implements DataSource<TDDCreated> {
     const contract = this.desmoHub['contract'];
     const queryFilter = contract.filters.TDDCreated();
     const events = await contract.queryFilter(queryFilter);
-    console.log(events)
-    return events.map((event: any) => {
-      return {
-        transactionHash: event.transactionHash,
-        owner: event.args['key'],
-        url: event.args['url'],
-        state: event.args['disabled'] ? 'DISABLED' : 'ENABLED',
-        score: event.args['score'].toNumber(),
-      } as TDDCreated;
-    });
+    console.log(events);
+    return events
+      .map((event: any) => {
+        return {
+          blockNumber: event.blockNumber,
+          transactionHash: event.transactionHash,
+          owner: event.args['key'],
+          url: event.args['url'],
+          state: event.args['disabled'] ? 'DISABLED' : 'ENABLED',
+          score: event.args['score'].toNumber(),
+        } as TDDCreated;
+      })
+      .reverse();
   }
 
   public getLength() {

@@ -19,7 +19,7 @@ import { TDDCreatedDataSource } from './tddcreated-datasource';
 })
 export class TddCreatedListTableComponent implements OnInit, OnDestroy, AfterViewInit
   {
-    displayedColumns: string[] = ['txHash', 'owner', 'url', 'state', 'score'];
+    displayedColumns: string[] = ['blockNumber', 'txHash', 'owner', 'url', 'state', 'score'];
     dataSource: TDDCreatedDataSource;
     loading = false;
 
