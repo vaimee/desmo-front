@@ -14,10 +14,10 @@ import { QueryCompletedDataSource } from './query-datasource';
 
 @Component({
   selector: 'app-transaction-list-table',
-  templateUrl: './transaction-list-table.component.html',
-  styleUrls: ['./transaction-list-table.component.css'],
+  templateUrl: './query-list-table.component.html',
+  styleUrls: ['./query-list-table.component.css'],
 })
-export class TransactionListTableComponent
+export class QueryListTableComponent
   implements OnInit, OnDestroy, AfterViewInit
 {
   displayedColumns: string[] = ['txHash', 'requestID', 'taskID', 'result'];
