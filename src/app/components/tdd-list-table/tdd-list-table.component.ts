@@ -1,8 +1,16 @@
-import { AfterViewInit, Component, EventEmitter, Output, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Output,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subscription, tap } from 'rxjs';
-import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
-import { TDDStatisticsDataSource } from './tdd-statistics-datasource';
+import { TDDDataSource } from './tdd-datasource';
 
 @Component({
   selector: 'app-tdd-list-table',
@@ -11,8 +19,8 @@ import { TDDStatisticsDataSource } from './tdd-statistics-datasource';
 })
 export class TddListTableComponent implements AfterViewInit, OnInit, OnDestroy {
   displayedColumns: string[] = ['address', 'url', 'state', 'score'];
-  dataSource: TDDStatisticsDataSource;
-  amountOfTDDs: number = 0;
+  dataSource: TDDDataSource;
+  loading = false;
 
   private subscriptions: Subscription;
 
@@ -21,33 +29,53 @@ export class TddListTableComponent implements AfterViewInit, OnInit, OnDestroy {
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
 
-  constructor(private desmold: DesmoldSDKService) {
-    this.dataSource = new TDDStatisticsDataSource(this.desmold);
+  constructor(private cd: ChangeDetectorRef) {
+    this.dataSource = new TDDDataSource();
     this.subscriptions = new Subscription();
   }
 
-  ngAfterViewInit() {
+  async ngAfterViewInit() {
     this.subscriptions.add(
-      this.paginator.page.pipe(tap(() => this.loadTDDsPage())).subscribe()
+      this.paginator.page
+        .pipe(
+          tap(() =>
+            this.loadPage(this.paginator.pageIndex, this.paginator.pageSize)
+          )
+        )
+        .subscribe()
     );
+    await this.loadPage(0, this.paginator.pageSize);
   }
 
   async ngOnInit(): Promise<void> {
     this.subscriptions.add(
       this.dataSource.error$.subscribe(() => this.errorEvent.emit())
     );
-
-    this.amountOfTDDs = (
-      await this.desmold.desmoHub.getTDDStorageLength()
-    ).toNumber();
-    await this.dataSource.loadTDDs(0, this.paginator.pageSize);
+    this.subscriptions.add(
+      this.dataSource.loading$.subscribe((loading) => {
+        this.loading = loading;
+        /**
+         * The loading$ observable emits values at the
+         * AfterViewInit lifecycle hook. We need to run
+         * again the change detector since the loading
+         * flag has an impact on the view!
+         */
+        this.cd.detectChanges();
+      })
+    );
   }
 
-  async loadTDDsPage() {
-    await this.dataSource.loadTDDs(
-      this.paginator.pageIndex,
-      this.paginator.pageSize
-    );
+  async loadPage(pageIndex: number, pageSize: number) {
+    await this.dataSource.loadTDDs(pageIndex, pageSize);
+    /**
+     * Calling the loadTDDs method of the data source
+     * results in the dataSource.getLength() value being
+     * updated. Since such value has an impact on the view
+     * and -most importantly- such method gets called once at
+     * the AfterViewInit lifecycle hook, we need to run
+     * again the change detector!
+     */
+    this.cd.detectChanges();
   }
 
   ngOnDestroy() {
