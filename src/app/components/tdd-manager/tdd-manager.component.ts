@@ -1,11 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
-import { ITDD } from '@vaimee/desmold-sdk';
+import { DesmoHub, ITDD } from '@vaimee/desmold-sdk';
 import { Subscription } from 'rxjs';
 import { ConfirmationDialogComponent } from 'src/app/components/confirmation-dialog/confirmation-dialog.component';
-import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 
 interface TDD {
   address: string;
@@ -30,7 +29,9 @@ export class TddManagerComponent implements OnInit, OnDestroy {
   loading: boolean = false;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(public dialog: MatDialog, private desmold: DesmoldSDKService) {
+  @Input('desmoHub') desmoHub!: DesmoHub;
+
+  constructor(public dialog: MatDialog) {
     // Check the cache for pre-existing data or initialise with an empty list:
     const tddList: string = localStorage.getItem(this.CACHE_KEY) ?? '[]';
     this.tableData = JSON.parse(tddList) as TDD[];
@@ -43,11 +44,9 @@ export class TddManagerComponent implements OnInit, OnDestroy {
   }
 
   async ngOnInit(): Promise<void> {
-    await this.desmold.connect();
-
     // tddCreated subscription
     this.subscriptions.add(
-      this.desmold.desmoHub.tddCreated$.subscribe((event) => {
+      this.desmoHub.tddCreated$.subscribe((event) => {
         this.tableData[0] = {
           address: event.key,
           url: event.url,
@@ -65,7 +64,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     // tddDisabled subscription
     this.subscriptions.add(
-      this.desmold.desmoHub.tddDisabled$.subscribe((event) => {
+      this.desmoHub.tddDisabled$.subscribe((event) => {
         this.tableData[0] = {
           address: event.key,
           url: event.url,
@@ -84,7 +83,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     // tddEnabled subscription
     this.subscriptions.add(
-      this.desmold.desmoHub.tddEnabled$.subscribe((event) => {
+      this.desmoHub.tddEnabled$.subscribe((event) => {
         this.tableData[0] = {
           address: event.key,
           url: event.url,
@@ -113,7 +112,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.desmold.desmoHub.registerTDD(this.tddUrl);
+        await this.desmoHub.registerTDD(this.tddUrl);
         this.loading = true;
       }
     });
@@ -124,7 +123,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.desmold.desmoHub.disableTDD();
+        await this.desmoHub.disableTDD();
         this.loading = true;
       }
     });
@@ -135,7 +134,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.desmold.desmoHub.enableTDD();
+        await this.desmoHub.enableTDD();
         this.loading = true;
       }
     });
@@ -144,7 +143,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
   async getTDD(): Promise<void> {
     let retrievedTDD: ITDD;
     try {
-      retrievedTDD = await this.desmold.desmoHub.getTDD();
+      retrievedTDD = await this.desmoHub.getTDD();
     } catch (error) {
       this.tddRetrieved = false;
       throw new Error(`Unable to retrieve your TDD. You may need to register one. Error message: ${error}`);

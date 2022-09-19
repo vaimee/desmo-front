@@ -4,12 +4,12 @@ import {
   OnDestroy,
   ViewChild,
   AfterViewInit,
+  Input,
 } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
-import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { MatPaginator } from '@angular/material/paginator';
-import { ISentTransaction, OperationType } from '@vaimee/desmold-sdk';
+import { DesmoHub,  OperationType } from '@vaimee/desmold-sdk';
 
 interface ITransaction {
   invokedOperation: string;
@@ -32,13 +32,15 @@ export class TransactionViewerComponent
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
+  @Input('desmoHub') desmoHub!: DesmoHub;
+
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
 
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private desmold: DesmoldSDKService) {
+  constructor() {
     // Check the cache for pre-existing data or initialise with an empty list:
     const txList: string = sessionStorage.getItem(this.CACHE_KEY) ?? '[]';
     this.tableData = JSON.parse(txList) as ITransaction[];
@@ -46,10 +48,8 @@ export class TransactionViewerComponent
   }
 
   async ngOnInit(): Promise<void> {
-    await this.desmold.connect();
-
     this.subscriptions.add(
-      this.desmold.desmoHub.transactionSent$.subscribe((tx) => {
+      this.desmoHub.transactionSent$.subscribe((tx) => {
         this.tableData.unshift({
           invokedOperation: this._fromOperationTypeToString(tx.invokedOperation),
           hash: tx.hash,

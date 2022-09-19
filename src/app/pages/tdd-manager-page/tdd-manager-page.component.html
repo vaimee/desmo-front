@@ -4,10 +4,10 @@
 
   <mat-grid-list cols="2" rows="2" rowHeight="2:1">
     <mat-grid-tile [colspan]="isSmallScreen ? 2 : 1" [rowspan]="1">
-      <app-tdd-manager></app-tdd-manager>
+      <app-tdd-manager [desmoHub]="desmoHub"></app-tdd-manager>
     </mat-grid-tile>
     <mat-grid-tile [colspan]="isSmallScreen ? 2 : 1" [rowspan]="1">
-      <app-transaction-viewer></app-transaction-viewer>
+      <app-transaction-viewer [desmoHub]="desmoHub"></app-transaction-viewer>
     </mat-grid-tile>
   </mat-grid-list>
 </div>
