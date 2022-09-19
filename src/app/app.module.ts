@@ -34,7 +34,6 @@ import { MatRadioModule } from '@angular/material/radio';
 import { TransactionViewerComponent } from './components/transaction-viewer/transaction-viewer.component';
 import { MatStepperModule } from '@angular/material/stepper';
 import { NgxMapboxGLModule } from 'ngx-mapbox-gl';
-import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
 import { TddListTableComponent } from './components/tdd-list-table/tdd-list-table.component';
@@ -96,7 +95,7 @@ const mapboxToken =
       // geocoderAccessToken: mapboxToken // Optional, specify if different from the map access token, can also be set per mgl-geocoder (accessToken input of mgl-geocoder)
     }),
   ],
-  providers: [DesmoldSDKService],
+  providers: [],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
