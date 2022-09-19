@@ -1,9 +1,7 @@
-import { IGeoAltitudeRange } from './../../interface/IQuery';
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { Component } from '@angular/core';
 import IQuery, {
   defaultIQuery,
-  IGeoPosition,
   RequestedDataType,
 } from 'src/app/interface/IQuery';
 
@@ -24,7 +22,13 @@ import * as MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { MatRadioChange } from '@angular/material/radio';
 import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { defaultIResult, defaultIResultTable, IResult, IResultTable, QueryResultTypes } from 'src/app/interface/IResult';
+import {
+  defaultIResult,
+  defaultIResultTable,
+  IResult,
+  IResultTable,
+  QueryResultTypes,
+} from 'src/app/interface/IResult';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 let filterMap: MapboxMap;
@@ -47,10 +51,10 @@ const drawPolygon: MapboxDraw = new MapboxDraw({
 })
 export class QueryPageComponent {
   query: IQuery = defaultIQuery();
-  result : IResult = defaultIResult();
+  result: IResult = defaultIResult();
   completed: boolean = false;
   displayedColumns: string[] = ['property', 'value', 'unit', 'time'];
-  resultTable: IResultTable[] = defaultIResultTable()
+  resultTable: IResultTable[] = defaultIResultTable();
 
   propertyFormGroup: FormGroup = this._fb.group({
     // propertyIRI: ['', [Validators.required, this.validIRIValidator()]],
@@ -77,7 +81,11 @@ export class QueryPageComponent {
   prefixesFormArray: FormArray = this._fb.array([]);
   prefixNames: string[] = [];
 
-  constructor(private _fb: FormBuilder, private desmold: DesmoldSDKService, private snackBar: MatSnackBar) {}
+  constructor(
+    private _fb: FormBuilder,
+    private desmold: DesmoldSDKService,
+    private snackBar: MatSnackBar
+  ) {}
 
   onFilterMapLoad(map: MapboxMap): void {
     filterMap = map;
@@ -128,16 +136,15 @@ export class QueryPageComponent {
     this.result.loading = true;
     this.resultTable = defaultIResultTable();
     this.query = defaultIQuery();
-    
+
     // Prefix list
-    
+
     for (let i = 0; i < this.prefixesFormArray.length; ++i) {
       this.query.prefixList?.push({
         abbreviation: this.prefixNames[i],
         completeURI: this.prefixesFormArray.controls[i].value,
       });
     }
-    
 
     /*
     If only a single prefix is used, no response is given.
@@ -155,7 +162,7 @@ export class QueryPageComponent {
 
     // Query filters
     this.query.staticFilter = this.filtersFormGroup.value.jsonPathExpression;
-    
+
     // To uncomment when these features will be implemented
     /*
     this.query.dynamicFilter =
@@ -199,22 +206,25 @@ export class QueryPageComponent {
     // TODO: other parts of the query...
     */
     console.log(this.query);
-    
+
     this.desmold.connect();
-  
+
     const eventPromise = firstValueFrom(this.desmold.desmoHub.requestID$);
     await this.desmold.desmoHub.getNewRequestID();
     const event = await eventPromise;
-    this.notifySentTransaction("new request ID received");
+    this.notifySentTransaction('new request ID received');
 
-    const queryToSend : string = this.queryToSend(this.query);
-    await this.desmold.desmoContract.buyQuery(event.requestID, queryToSend, environment.iExecDAppAddress);
-    this.notifySentTransaction("Query successfully sent");
-    const {result, type} = await this.desmold.desmoContract.getQueryResult();
-    this.notifySentTransaction("Query result received");
+    const queryToSend: string = this.queryToSend(this.query);
+    await this.desmold.desmoContract.buyQuery(
+      event.requestID,
+      queryToSend,
+      environment.iExecDAppAddress
+    );
+    this.notifySentTransaction('Query successfully sent');
+    const { result, type } = await this.desmold.desmoContract.getQueryResult();
+    this.notifySentTransaction('Query result received');
     const elapsedTime = this.elapsed(start);
     this.queryCompleted(result, type, elapsedTime);
-
   }
 
   resetQueryBuilder(stepperObject: MatStepper) {
@@ -351,15 +361,24 @@ export class QueryPageComponent {
     return null;
   }
 
-  private queryCompleted(value: number | string, type: QueryResultTypes, elapsedTime: number): void {
+  private queryCompleted(
+    value: number | string,
+    type: QueryResultTypes,
+    elapsedTime: number
+  ): void {
     this.result.loading = false;
     this.result.arrived = true;
-    this.result.data.value = value
+    this.result.data.value = value;
     this.result.data.type = type;
     this.result.elapsedTime = elapsedTime;
     this.result.query = this.query;
-    const resultTable : IResultTable = {property: this.query.property.identifier, value: value, unit: this.query.property.unit, time:this.result.elapsedTime}
-    this.resultTable.push(resultTable)
+    const resultTable: IResultTable = {
+      property: this.query.property.identifier,
+      value: value,
+      unit: this.query.property.unit,
+      time: this.result.elapsedTime,
+    };
+    this.resultTable.push(resultTable);
   }
 
   private resultReset(): void {
@@ -369,9 +388,12 @@ export class QueryPageComponent {
 
   private queryToSend(query: IQuery): string {
     var queryString: string = JSON.stringify(query);
-    var transformedQuery: string = queryString.trim().replace(/\"/gm, "__!_").replace(/'/gm, "--#-"); // temporary solution to avoid problems with quotes: https://github.com/vaimee/desmo-dapp/issues/1
+    var transformedQuery: string = queryString
+      .trim()
+      .replace(/\"/gm, '__!_')
+      .replace(/'/gm, '--#-'); // temporary solution to avoid problems with quotes: https://github.com/vaimee/desmo-dapp/issues/1
     console.log(transformedQuery);
-    return transformedQuery
+    return transformedQuery;
   }
   private now(): number {
     return new Date().getTime();
