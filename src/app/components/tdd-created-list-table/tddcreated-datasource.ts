@@ -64,7 +64,6 @@ export class TDDCreatedDataSource implements DataSource<TDDCreated> {
     const contract = this.desmoHub['contract'];
     const queryFilter = contract.filters.TDDCreated();
     const events = await contract.queryFilter(queryFilter);
-    console.log(events);
     return events
       .map((event: any) => {
         return {
