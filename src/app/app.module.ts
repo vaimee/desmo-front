@@ -42,6 +42,7 @@ import { QueryListTableComponent } from './components/query-list-table/query-lis
 import { TddCreatedListTableComponent } from './components/tdd-created-list-table/tdd-created-list-table.component';
 import { TddEnabledListTableComponent } from './components/tdd-enabled-list-table/tdd-enabled-list-table.component';
 import { TddDisabledListTableComponent } from './components/tdd-disabled-list-table/tdd-disabled-list-table.component';
+import { QueryPipe } from './pipes/query/query.pipe';
 
 const mapboxToken =
   'pk.eyJ1IjoiaW9zb25vcGVyc2lhIiwiYSI6ImNsNjBzYjVldjAwNWszaW1rNWZtdTRuNjkifQ.2lGOSvqt5lahEfZYLa3eRg';
@@ -61,6 +62,7 @@ const mapboxToken =
     TddCreatedListTableComponent,
     TddEnabledListTableComponent,
     TddDisabledListTableComponent,
+    QueryPipe,
   ],
   imports: [
     BrowserModule,
