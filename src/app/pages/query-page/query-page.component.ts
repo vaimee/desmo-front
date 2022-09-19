@@ -1,5 +1,4 @@
 import { IGeoAltitudeRange } from './../../interface/IQuery';
-import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { Component } from '@angular/core';
 import IQuery, {
   defaultIQuery,
@@ -26,6 +25,7 @@ import { firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { defaultIResult, defaultIResultTable, IResult, IResultTable, QueryResultTypes } from 'src/app/interface/IResult';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Desmo, DesmoHub, WalletSignerMetamask } from '@vaimee/desmold-sdk';
 
 let filterMap: MapboxMap;
 const drawPolygon: MapboxDraw = new MapboxDraw({
@@ -77,7 +77,7 @@ export class QueryPageComponent {
   prefixesFormArray: FormArray = this._fb.array([]);
   prefixNames: string[] = [];
 
-  constructor(private _fb: FormBuilder, private desmold: DesmoldSDKService, private snackBar: MatSnackBar) {}
+  constructor(private _fb: FormBuilder, private snackBar: MatSnackBar) {}
 
   onFilterMapLoad(map: MapboxMap): void {
     filterMap = map;
@@ -128,16 +128,16 @@ export class QueryPageComponent {
     this.result.loading = true;
     this.resultTable = defaultIResultTable();
     this.query = defaultIQuery();
-    
+
     // Prefix list
-    
+
     for (let i = 0; i < this.prefixesFormArray.length; ++i) {
       this.query.prefixList?.push({
         abbreviation: this.prefixNames[i],
         completeURI: this.prefixesFormArray.controls[i].value,
       });
     }
-    
+
 
     /*
     If only a single prefix is used, no response is given.
@@ -155,7 +155,7 @@ export class QueryPageComponent {
 
     // Query filters
     this.query.staticFilter = this.filtersFormGroup.value.jsonPathExpression;
-    
+
     // To uncomment when these features will be implemented
     /*
     this.query.dynamicFilter =
@@ -199,18 +199,27 @@ export class QueryPageComponent {
     // TODO: other parts of the query...
     */
     console.log(this.query);
-    
-    this.desmold.connect();
-  
-    const eventPromise = firstValueFrom(this.desmold.desmoHub.requestID$);
-    await this.desmold.desmoHub.getNewRequestID();
+
+    const walletSigner = new WalletSignerMetamask((window as any).ethereum);
+
+    const desmoHub = new DesmoHub(walletSigner);
+    const desmo = new Desmo(walletSigner);
+
+    if (!desmoHub.isConnected || !desmo.isConnected) {
+      await walletSigner.connect();
+      desmoHub.connect();
+      desmo.connect();
+    }
+
+    const eventPromise = firstValueFrom(desmoHub.requestID$);
+    await desmoHub.getNewRequestID();
     const event = await eventPromise;
     this.notifySentTransaction("new request ID received");
 
     const queryToSend : string = this.queryToSend(this.query);
-    await this.desmold.desmoContract.buyQuery(event.requestID, queryToSend, environment.iExecDAppAddress);
+    await desmo.buyQuery(event.requestID, queryToSend, environment.iExecDAppAddress);
     this.notifySentTransaction("Query successfully sent");
-    const {result, type} = await this.desmold.desmoContract.getQueryResult();
+    const {result, type} = await desmo.getQueryResult();
     this.notifySentTransaction("Query result received");
     const elapsedTime = this.elapsed(start);
     this.queryCompleted(result, type, elapsedTime);
