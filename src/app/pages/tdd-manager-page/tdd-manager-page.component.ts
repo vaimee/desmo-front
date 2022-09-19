@@ -1,4 +1,3 @@
-import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { map, Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,6 +6,7 @@ import {
   BreakpointObserver,
   BreakpointState,
 } from '@angular/cdk/layout';
+import { DesmoHub, WalletSignerMetamask } from '@vaimee/desmold-sdk';
 
 type EventType = 'CREATE' | 'DISABLE' | 'ENABLE' | 'RETRIEVE';
 const eventMessages: Record<EventType, string> = {
@@ -24,15 +24,23 @@ const eventMessages: Record<EventType, string> = {
 export class TddManagerPageComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   isSmallScreen: boolean = false;
+  private walletSigner: WalletSignerMetamask;
+  desmoHub: DesmoHub;
 
   constructor(
-    private desmold: DesmoldSDKService,
     private snackBar: MatSnackBar,
     private breakpointObserver: BreakpointObserver
-  ) {}
+  ) {
+    this.walletSigner = new WalletSignerMetamask((window as any).ethereum);
+    this.desmoHub = new DesmoHub(this.walletSigner);
+  }
 
   async ngOnInit(): Promise<void> {
-    await this.desmold.connect();
+    if (!this.desmoHub.isConnected) {
+      await this.walletSigner.connect();
+      this.desmoHub.connect();
+    }
+    await this.desmoHub.startListeners();
 
     /** Based on the screen size, switch from standard to one column per row */
     this.subscriptions.add(
@@ -41,16 +49,16 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
         .subscribe(({ matches }) => (this.isSmallScreen = matches))
     );
     this.subscriptions.add(
-      this.desmold.desmoHub.tddCreated$.subscribe(() => this.notifyTDDEvent('CREATE'))
+      this.desmoHub.tddCreated$.subscribe(() => this.notifyTDDEvent('CREATE'))
     );
     this.subscriptions.add(
-      this.desmold.desmoHub.tddDisabled$.subscribe(() => this.notifyTDDEvent('DISABLE'))
+      this.desmoHub.tddDisabled$.subscribe(() => this.notifyTDDEvent('DISABLE'))
     );
     this.subscriptions.add(
-      this.desmold.desmoHub.tddEnabled$.subscribe(() => this.notifyTDDEvent('ENABLE'))
+      this.desmoHub.tddEnabled$.subscribe(() => this.notifyTDDEvent('ENABLE'))
     );
     this.subscriptions.add(
-      this.desmold.desmoHub.transactionSent$.subscribe(() =>
+      this.desmoHub.transactionSent$.subscribe(() =>
         this.notifySentTransaction()
       )
     );
