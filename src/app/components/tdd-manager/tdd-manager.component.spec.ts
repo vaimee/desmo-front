@@ -8,9 +8,8 @@ describe('TddManagerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TddManagerComponent ]
-    })
-    .compileComponents();
+      declarations: [TddManagerComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

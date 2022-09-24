@@ -45,13 +45,13 @@
 /***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js';  // Included with Angular CLI.
-
+import 'zone.js'; // Included with Angular CLI.
 
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */
 import * as process from 'process';
+import { Buffer } from 'buffer';
 (window as any).global = window; // Required by ngx-mapbox-gl
 (window as any).process = process;
-global.Buffer = global.Buffer || require('buffer').Buffer;
+global.Buffer = global.Buffer || Buffer;

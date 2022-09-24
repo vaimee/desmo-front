@@ -1,15 +1,15 @@
 import {
-  Component,
-  OnInit,
-  OnDestroy,
-  ViewChild,
   AfterViewInit,
+  Component,
+  OnDestroy,
+  OnInit,
+  ViewChild,
 } from '@angular/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { MatPaginator } from '@angular/material/paginator';
-import { ISentTransaction, OperationType } from '@vaimee/desmold-sdk';
+import { OperationType } from '@vaimee/desmold-sdk';
 
 interface ITransaction {
   invokedOperation: string;
@@ -51,13 +51,13 @@ export class TransactionViewerComponent
     this.subscriptions.add(
       this.desmold.desmoHub.transactionSent$.subscribe((tx) => {
         this.tableData.unshift({
-          invokedOperation: this._fromOperationTypeToString(tx.invokedOperation),
+          invokedOperation: this._fromOperationTypeToString(
+            tx.invokedOperation
+          ),
           hash: tx.hash,
           sent: tx.sent,
         } as ITransaction);
-        this.dataSource = new MatTableDataSource<ITransaction>(
-          this.tableData
-        );
+        this.dataSource = new MatTableDataSource<ITransaction>(this.tableData);
 
         // Save new data inside the cache:
         sessionStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
@@ -66,12 +66,17 @@ export class TransactionViewerComponent
   }
 
   private _fromOperationTypeToString(opType: OperationType): string {
-    switch(opType) {
-      case OperationType.registerTDD: return 'Register TDD';
-      case OperationType.disableTDD: return 'Disable TDD';
-      case OperationType.enableTDD: return 'Enable TDD';
-      case OperationType.getNewRequestID: return 'Request ID';
-      default: return 'unknown';
+    switch (opType) {
+      case OperationType.registerTDD:
+        return 'Register TDD';
+      case OperationType.disableTDD:
+        return 'Disable TDD';
+      case OperationType.enableTDD:
+        return 'Enable TDD';
+      case OperationType.getNewRequestID:
+        return 'Request ID';
+      default:
+        return 'unknown';
     }
   }
 

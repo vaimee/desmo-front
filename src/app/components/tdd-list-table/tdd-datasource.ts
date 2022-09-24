@@ -43,7 +43,9 @@ export class TDDDataSource implements DataSource<TDD> {
     const start = pageIndex * pageSize;
     const stop = start + pageSize;
     try {
-      this.tddStorageLength = (await this.desmoHub.getTDDStorageLength()).toNumber();
+      this.tddStorageLength = (
+        await this.desmoHub.getTDDStorageLength()
+      ).toNumber();
       const rawTDDs = await this.desmoHub.getTDDList(start, stop);
       const tdds = rawTDDs.map(({ owner, disabled, score, url }) => ({
         address: owner,

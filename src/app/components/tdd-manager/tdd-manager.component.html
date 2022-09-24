@@ -35,7 +35,9 @@
           <th mat-header-cell *matHeaderCellDef>Address</th>
           <td mat-cell *matCellDef="let element">
             <a
-              [href]="'https://blockscout-viviani.iex.ec/address/' + element.address"
+              [href]="
+                'https://blockscout-viviani.iex.ec/address/' + element.address
+              "
               target="_blank"
               matTooltip="Explore wallet on iExec"
               matTooltipShowDelay="200"
@@ -64,7 +66,7 @@
         <ng-container matColumnDef="state">
           <th mat-header-cell *matHeaderCellDef>State</th>
           <td mat-cell *matCellDef="let element">
-            {{ element.state ? "ENABLED" : "DISABLED" }}
+            {{ element.state ? 'ENABLED' : 'DISABLED' }}
           </td>
         </ng-container>
 

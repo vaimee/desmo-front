@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { ITDD } from '@vaimee/desmold-sdk';
 import { Subscription } from 'rxjs';
@@ -25,9 +24,9 @@ export class TddManagerComponent implements OnInit, OnDestroy {
   tableData: TDD[];
   dataSource: MatTableDataSource<TDD>;
 
-  tddRetrieved: boolean = false;
-  tddEnabled: boolean = false;
-  loading: boolean = false;
+  tddRetrieved = false;
+  tddEnabled = false;
+  loading = false;
   private subscriptions: Subscription = new Subscription();
 
   constructor(public dialog: MatDialog, private desmold: DesmoldSDKService) {
@@ -51,8 +50,8 @@ export class TddManagerComponent implements OnInit, OnDestroy {
         this.tableData[0] = {
           address: event.key,
           url: event.url,
-          state: !event.disabled
-        }
+          state: !event.disabled,
+        };
         // Save new data inside the cache:
         localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
 
@@ -70,7 +69,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
           address: event.key,
           url: event.url,
           state: false,
-        }
+        };
 
         // Save new data inside the cache:
         localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
@@ -89,7 +88,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
           address: event.key,
           url: event.url,
           state: true,
-        }
+        };
 
         // Save new data inside the cache:
         localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
@@ -147,7 +146,9 @@ export class TddManagerComponent implements OnInit, OnDestroy {
       retrievedTDD = await this.desmold.desmoHub.getTDD();
     } catch (error) {
       this.tddRetrieved = false;
-      throw new Error(`Unable to retrieve your TDD. You may need to register one. Error message: ${error}`);
+      throw new Error(
+        `Unable to retrieve your TDD. You may need to register one. Error message: ${error}`
+      );
     }
 
     this.tableData[0] = {
