@@ -104,9 +104,21 @@
             ],
             "scripts": []
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
-  "defaultProject": "desmo-front"
+  "defaultProject": "desmo-front",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  }
 }
