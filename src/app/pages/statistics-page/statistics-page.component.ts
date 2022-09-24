@@ -7,7 +7,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   styleUrls: ['./statistics-page.component.css'],
 })
 export class StatisticsPageComponent {
-
   constructor(private snackBar: MatSnackBar) {}
 
   showErrorToast(message: string) {
@@ -15,5 +14,4 @@ export class StatisticsPageComponent {
       duration: 3000,
     });
   }
-
 }

@@ -8,9 +8,8 @@ describe('QueryListTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ QueryListTableComponent ]
-    })
-    .compileComponents();
+      declarations: [QueryListTableComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

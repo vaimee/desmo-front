@@ -1,20 +1,17 @@
-import { Injectable } from '@angular/core';
-import {
-  Desmo,
-  DesmoHub,
-  WalletSignerMetamask,
-} from '@vaimee/desmold-sdk';
+import { Injectable, OnDestroy } from '@angular/core';
+import { Desmo, DesmoHub, WalletSignerMetamask } from '@vaimee/desmold-sdk';
 
 @Injectable({
   providedIn: 'root',
 })
-export class DesmoldSDKService {
+export class DesmoldSDKService implements OnDestroy {
   private _walletSigner: WalletSignerMetamask;
   private _desmoHub: DesmoHub;
   private _desmoContract: Desmo;
-  private _isConnected: boolean = false;
+  private _isConnected = false;
 
   constructor() {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     this._walletSigner = new WalletSignerMetamask(window.ethereum);
     this._isConnected = this._walletSigner.isConnected;
@@ -22,10 +19,16 @@ export class DesmoldSDKService {
     this._desmoHub = new DesmoHub(this._walletSigner);
     this._desmoContract = new Desmo(this._walletSigner);
 
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    window.ethereum.on('chainChanged', (chainId: number) => window.location.reload());
+    window.ethereum.on('chainChanged', (chainId: number) =>
+      window.location.reload()
+    );
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    window.ethereum.on('accountsChanged', (accounts: Array<string>) => window.location.reload());
+    window.ethereum.on('accountsChanged', (accounts: Array<string>) =>
+      window.location.reload()
+    );
   }
 
   public get desmoHub(): DesmoHub {

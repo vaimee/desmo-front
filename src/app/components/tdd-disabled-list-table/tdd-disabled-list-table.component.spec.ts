@@ -8,9 +8,8 @@ describe('TddDisabledListTableComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ TddDisabledListTableComponent ]
-    })
-    .compileComponents();
+      declarations: [TddDisabledListTableComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

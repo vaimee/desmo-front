@@ -2,15 +2,14 @@ import { Pipe, PipeTransform } from '@angular/core';
 import IQuery, { IGeoCircle, IGeoPolygon } from 'src/app/interface/IQuery';
 
 @Pipe({
-  name: 'query'
+  name: 'query',
 })
 export class QueryPipe implements PipeTransform {
-
   transform(value: unknown, ...args: unknown[]): string {
-    if (typeof value == 'object') {
+    if (typeof value === 'object') {
       return this.stringifyQuery(value as IQuery);
     } else {
-      throw new Error('QueryPipe requires an IQuery input.')
+      throw new Error('QueryPipe requires an IQuery input.');
     }
   }
 

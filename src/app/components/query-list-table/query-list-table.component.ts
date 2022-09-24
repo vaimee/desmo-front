@@ -1,12 +1,12 @@
 import {
-  Component,
-  EventEmitter,
-  Output,
-  OnDestroy,
-  OnInit,
-  ViewChild,
   AfterViewInit,
   ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subscription, tap } from 'rxjs';
@@ -20,7 +20,13 @@ import { QueryCompletedDataSource } from './query-datasource';
 export class QueryListTableComponent
   implements OnInit, OnDestroy, AfterViewInit
 {
-  displayedColumns: string[] = ['blockNumber', 'txHash', 'requestID', 'taskID', 'result'];
+  displayedColumns: string[] = [
+    'blockNumber',
+    'txHash',
+    'requestID',
+    'taskID',
+    'result',
+  ];
   dataSource: QueryCompletedDataSource;
   loading = false;
 
