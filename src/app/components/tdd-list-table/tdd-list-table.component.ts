@@ -1,12 +1,12 @@
 import {
   AfterViewInit,
+  ChangeDetectorRef,
   Component,
   EventEmitter,
-  Output,
   OnDestroy,
   OnInit,
+  Output,
   ViewChild,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { Subscription, tap } from 'rxjs';

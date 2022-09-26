@@ -1,12 +1,8 @@
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { map, Subscription } from 'rxjs';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {
-  Breakpoints,
-  BreakpointObserver,
-  BreakpointState,
-} from '@angular/cdk/layout';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 type EventType = 'CREATE' | 'DISABLE' | 'ENABLE' | 'RETRIEVE';
 const eventMessages: Record<EventType, string> = {
@@ -23,7 +19,7 @@ const eventMessages: Record<EventType, string> = {
 })
 export class TddManagerPageComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
-  isSmallScreen: boolean = false;
+  isSmallScreen = false;
 
   constructor(
     private desmold: DesmoldSDKService,
@@ -41,13 +37,19 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
         .subscribe(({ matches }) => (this.isSmallScreen = matches))
     );
     this.subscriptions.add(
-      this.desmold.desmoHub.tddCreated$.subscribe(() => this.notifyTDDEvent('CREATE'))
+      this.desmold.desmoHub.tddCreated$.subscribe(() =>
+        this.notifyTDDEvent('CREATE')
+      )
     );
     this.subscriptions.add(
-      this.desmold.desmoHub.tddDisabled$.subscribe(() => this.notifyTDDEvent('DISABLE'))
+      this.desmold.desmoHub.tddDisabled$.subscribe(() =>
+        this.notifyTDDEvent('DISABLE')
+      )
     );
     this.subscriptions.add(
-      this.desmold.desmoHub.tddEnabled$.subscribe(() => this.notifyTDDEvent('ENABLE'))
+      this.desmold.desmoHub.tddEnabled$.subscribe(() =>
+        this.notifyTDDEvent('ENABLE')
+      )
     );
     this.subscriptions.add(
       this.desmold.desmoHub.transactionSent$.subscribe(() =>
@@ -71,5 +73,4 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
 }
