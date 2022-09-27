@@ -28,7 +28,11 @@ export class TddManagerPageComponent implements OnInit, OnDestroy {
   ) {}
 
   async ngOnInit(): Promise<void> {
-    await this.desmold.connect();
+    await this.desmold.isReady;
+
+    if (!this.desmold.desmoHub.isListening) {
+      await this.desmold.desmoHub.startListeners();
+    }
 
     /** Based on the screen size, switch from standard to one column per row */
     this.subscriptions.add(
