@@ -5,12 +5,14 @@
   <mat-divider inset></mat-divider>
   <mat-card-content class="card-content">
     <button
-      class="Register-button"
-      mat-raised-button
-      color="primary"
+      class="horizontalCenter"
+      style="margin-bottom: 6px"
+      mat-stroked-button
+      color="warn"
       (click)="clearCache()"
+      [disabled]="txListSize === 0"
     >
-      Clear transactions cache
+      Clear transactions history for this account
     </button>
     <div class="mat-elevation-z4">
       <table mat-table [dataSource]="dataSource" class="full-width">
@@ -50,7 +52,9 @@
       </table>
 
       <mat-paginator
-        [pageSizeOptions]="[5, 10, 20]"
+        [length]="txListSize"
+        [pageSize]="3"
+        [pageSizeOptions]="[3]"
         showFirstLastButtons
         aria-label="Select page of transactions"
       >
