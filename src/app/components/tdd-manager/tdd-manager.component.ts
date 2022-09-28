@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableDataSource } from '@angular/material/table';
 import { ITDD } from '@vaimee/desmold-sdk';
 import { Subscription } from 'rxjs';
@@ -18,44 +19,55 @@ interface TDD {
   styleUrls: ['./tdd-manager.component.css'],
 })
 export class TddManagerComponent implements OnInit, OnDestroy {
-  private readonly CACHE_KEY: string = 'tddList';
   tddUrl = '';
   displayedColumns: string[] = ['address', 'url', 'state'];
-  tableData: TDD[];
   dataSource: MatTableDataSource<TDD>;
 
   tddRetrieved = false;
   tddEnabled = false;
   loading = false;
-  private subscriptions: Subscription = new Subscription();
+  private subscriptions: Subscription;
 
-  constructor(public dialog: MatDialog, private desmold: DesmoldSDKService) {
-    // Check the cache for pre-existing data or initialise with an empty list:
-    const tddList: string = localStorage.getItem(this.CACHE_KEY) ?? '[]';
-    this.tableData = JSON.parse(tddList) as TDD[];
-    this.dataSource = new MatTableDataSource<TDD>(this.tableData);
-
-    if (this.tableData.length > 0) {
-      this.tddRetrieved = true;
-      this.tddEnabled = this.tableData[0].state;
-    }
+  constructor(
+    public dialog: MatDialog,
+    private snackBar: MatSnackBar,
+    private desmold: DesmoldSDKService
+  ) {
+    this.dataSource = new MatTableDataSource<TDD>([]);
+    this.subscriptions = new Subscription();
   }
 
   async ngOnInit(): Promise<void> {
-    await this.desmold.connect();
+    await this.desmold.isReady;
+
+    if (!this.desmold.desmoHub.isListening) {
+      await this.desmold.desmoHub.startListeners();
+    }
+
+    // Reset the table when the selected account changes:
+    this.subscriptions.add(
+      this.desmold.accountsChanged.subscribe(async () => {
+        this.dataSource = new MatTableDataSource<TDD>([]);
+
+        // Reset all the flags:
+        this.tddRetrieved = false;
+        this.tddEnabled = false;
+        this.loading = false;
+
+        await this.getTDD();
+      })
+    );
 
     // tddCreated subscription
     this.subscriptions.add(
       this.desmold.desmoHub.tddCreated$.subscribe((event) => {
-        this.tableData[0] = {
-          address: event.key,
-          url: event.url,
-          state: !event.disabled,
-        };
-        // Save new data inside the cache:
-        localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
-
-        this.dataSource = new MatTableDataSource<TDD>(this.tableData);
+        this.dataSource = new MatTableDataSource<TDD>([
+          {
+            address: event.key,
+            url: event.url,
+            state: !event.disabled,
+          },
+        ]);
         this.tddRetrieved = true;
         this.tddEnabled = !event.disabled;
         this.loading = false;
@@ -65,16 +77,13 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     // tddDisabled subscription
     this.subscriptions.add(
       this.desmold.desmoHub.tddDisabled$.subscribe((event) => {
-        this.tableData[0] = {
-          address: event.key,
-          url: event.url,
-          state: false,
-        };
-
-        // Save new data inside the cache:
-        localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
-
-        this.dataSource = new MatTableDataSource<TDD>(this.tableData);
+        this.dataSource = new MatTableDataSource<TDD>([
+          {
+            address: event.key,
+            url: event.url,
+            state: false,
+          },
+        ]);
         this.tddRetrieved = true;
         this.tddEnabled = false;
         this.loading = false;
@@ -84,16 +93,13 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     // tddEnabled subscription
     this.subscriptions.add(
       this.desmold.desmoHub.tddEnabled$.subscribe((event) => {
-        this.tableData[0] = {
-          address: event.key,
-          url: event.url,
-          state: true,
-        };
-
-        // Save new data inside the cache:
-        localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
-
-        this.dataSource = new MatTableDataSource<TDD>(this.tableData);
+        this.dataSource = new MatTableDataSource<TDD>([
+          {
+            address: event.key,
+            url: event.url,
+            state: true,
+          },
+        ]);
         this.tddRetrieved = true;
         this.tddEnabled = true;
         this.loading = false;
@@ -103,17 +109,22 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     await this.getTDD();
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-
   registerTDD() {
     const dialogRef = this.dialog.open(ConfirmationDialogComponent);
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.desmold.desmoHub.registerTDD(this.tddUrl);
-        this.loading = true;
+        try {
+          await this.desmold.desmoHub.registerTDD(this.tddUrl);
+          this.loading = true;
+        } catch {
+          this.snackBar.open(
+            'Unable to register your TDD. You may need to disable the one you already registered.',
+            'Dismiss',
+            { duration: 3000 }
+          );
+          return;
+        }
       }
     });
   }
@@ -123,8 +134,17 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.desmold.desmoHub.disableTDD();
-        this.loading = true;
+        try {
+          await this.desmold.desmoHub.disableTDD();
+          this.loading = true;
+        } catch {
+          this.snackBar.open(
+            'Unable disable your TDD. It may be already disabled.',
+            'Dismiss',
+            { duration: 3000 }
+          );
+          return;
+        }
       }
     });
   }
@@ -134,8 +154,17 @@ export class TddManagerComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().subscribe(async (result) => {
       if (result) {
-        await this.desmold.desmoHub.enableTDD();
-        this.loading = true;
+        try {
+          await this.desmold.desmoHub.enableTDD();
+          this.loading = true;
+        } catch {
+          this.snackBar.open(
+            'Unable to enable your TDD. It may be already enabled.',
+            'Dismiss',
+            { duration: 3000 }
+          );
+          return;
+        }
       }
     });
   }
@@ -144,24 +173,31 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     let retrievedTDD: ITDD;
     try {
       retrievedTDD = await this.desmold.desmoHub.getTDD();
+      this.snackBar.open('Successfully retrieved your TDD.', 'Dismiss', {
+        duration: 3000,
+      });
     } catch (error) {
       this.tddRetrieved = false;
-      throw new Error(
-        `Unable to retrieve your TDD. You may need to register one. Error message: ${error}`
+      this.snackBar.open(
+        'Unable to retrieve your TDD. You may need to register one.',
+        'Dismiss',
+        { duration: 3000 }
       );
+      return;
     }
 
-    this.tableData[0] = {
-      address: retrievedTDD.owner,
-      url: retrievedTDD.url,
-      state: !retrievedTDD.disabled,
-    };
-
-    // Save new data inside the cache:
-    localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.tableData));
-
-    this.dataSource = new MatTableDataSource<TDD>(this.tableData);
+    this.dataSource = new MatTableDataSource<TDD>([
+      {
+        address: retrievedTDD.owner,
+        url: retrievedTDD.url,
+        state: !retrievedTDD.disabled,
+      },
+    ]);
     this.tddRetrieved = true;
     this.tddEnabled = !retrievedTDD.disabled;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
