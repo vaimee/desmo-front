@@ -41,6 +41,7 @@ import { TddListTableComponent } from './components/tdd-list-table/tdd-list-tabl
 import { QueryEventsTableComponent } from './components/query-events-table/query-events-table.component';
 import { QueryPipe } from './pipes/query/query.pipe';
 import { TddEventsTableComponent } from './components/tdd-events-table/tdd-events-table.component';
+import { NotConnectedPageComponent } from './pages/not-connected-page/not-connected-page.component';
 
 const mapboxToken =
   'pk.eyJ1IjoiaW9zb25vcGVyc2lhIiwiYSI6ImNsNjBzYjVldjAwNWszaW1rNWZtdTRuNjkifQ.2lGOSvqt5lahEfZYLa3eRg';
@@ -59,6 +60,7 @@ const mapboxToken =
     QueryEventsTableComponent,
     QueryPipe,
     TddEventsTableComponent,
+    NotConnectedPageComponent,
   ],
   imports: [
     BrowserModule,
