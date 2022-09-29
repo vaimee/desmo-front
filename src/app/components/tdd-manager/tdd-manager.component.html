@@ -1,7 +1,7 @@
 <mat-card class="mat-elevation-z6">
-  <mat-card-header
-    ><mat-card-title> TDD actions </mat-card-title></mat-card-header
-  >
+  <mat-card-header>
+    <mat-card-title> Your registered TDD </mat-card-title>
+  </mat-card-header>
 
   <mat-divider inset></mat-divider>
   <mat-card-content>
@@ -70,6 +70,16 @@
           </td>
         </ng-container>
 
+        <!-- Row shown when there is no matching data. -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="3">
+            <span style="font-style: italic"
+              >No registered TDD was found for the currently-selected
+              account.</span
+            >
+          </td>
+        </tr>
+
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
@@ -105,6 +115,6 @@
   </mat-card-content>
 
   <mat-card-footer>
-    <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar
-  ></mat-card-footer>
+    <mat-progress-bar mode="indeterminate" *ngIf="loading"></mat-progress-bar>
+  </mat-card-footer>
 </mat-card>
