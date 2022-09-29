@@ -1,41 +1,19 @@
 <div class="grid-container">
   <h1 class="mat-h1">Registered TDDs</h1>
-  <app-tdd-list-table
-    (errorEvent)="showErrorToast('Error while loading TDDs...')"
-  ></app-tdd-list-table>
+  <app-tdd-list-table></app-tdd-list-table>
   <h1 class="mat-h1" style="margin-top: 20px">Event logs</h1>
   <mat-tab-group mat-stretch-tabs>
     <mat-tab label="QueryCompleted events">
-      <app-transaction-list-table
-        (errorEvent)="
-          showErrorToast('Error while loading QueryCompleted events...')
-        "
-      >
-      </app-transaction-list-table>
+      <app-transaction-list-table></app-transaction-list-table>
     </mat-tab>
     <mat-tab label="TDDCreated events">
-      <app-tdd-created-list-table
-        (errorEvent)="
-          showErrorToast('Error while loading TDDCreated events...')
-        "
-      >
-      </app-tdd-created-list-table>
+      <app-tdd-created-list-table></app-tdd-created-list-table>
     </mat-tab>
     <mat-tab label="TDDEnabled events">
-      <app-tdd-enabled-list-table
-        (errorEvent)="
-          showErrorToast('Error while loading TDDEnabled events...')
-        "
-      >
-      </app-tdd-enabled-list-table>
+      <app-tdd-enabled-list-table></app-tdd-enabled-list-table>
     </mat-tab>
     <mat-tab label="TDDDisabled events">
-      <app-tdd-disabled-list-table
-        (errorEvent)="
-          showErrorToast('Error while loading TDDDisabled events...')
-        "
-      >
-      </app-tdd-disabled-list-table>
+      <app-tdd-disabled-list-table></app-tdd-disabled-list-table>
     </mat-tab>
   </mat-tab-group>
 </div>
