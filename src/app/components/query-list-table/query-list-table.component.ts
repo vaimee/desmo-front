@@ -19,7 +19,7 @@ interface IQueryEvent {
 }
 
 @Component({
-  selector: 'app-transaction-list-table',
+  selector: 'app-query-list-table',
   templateUrl: './query-list-table.component.html',
   styleUrls: ['./query-list-table.component.css'],
 })

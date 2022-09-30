@@ -28,6 +28,7 @@ export class TddEventsListTableComponent implements AfterViewInit, OnDestroy {
 
   dataSource: MatTableDataSource<ITDDEvent>;
   private txList: ITDDEvent[] = [];
+  public filterValue = '';
   loading = false;
 
   private subscriptions: Subscription;
@@ -40,6 +41,9 @@ export class TddEventsListTableComponent implements AfterViewInit, OnDestroy {
     private cd: ChangeDetectorRef
   ) {
     this.dataSource = new MatTableDataSource<ITDDEvent>(this.txList);
+    this.dataSource.filterPredicate = (data: ITDDEvent, filter: string) =>
+      data.owner.toLowerCase().indexOf(filter) !== -1 ||
+      data.url.toLowerCase().indexOf(filter) !== -1;
     this.subscriptions = new Subscription();
   }
 
@@ -117,6 +121,10 @@ export class TddEventsListTableComponent implements AfterViewInit, OnDestroy {
 
     // Show results in the table:
     this.dataSource.data = this.txList.slice(start, stop);
+  }
+
+  public applyFilter(filterValue: string): void {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 
   public get dataLength(): number {
