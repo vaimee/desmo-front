@@ -25,34 +25,30 @@
       </td>
     </ng-container>
 
-    <!-- RequestID Column -->
-    <ng-container matColumnDef="requestID">
-      <th mat-header-cell *matHeaderCellDef>RequestID</th>
+    <!-- Log Column -->
+    <ng-container matColumnDef="log">
+      <th mat-header-cell *matHeaderCellDef>Log message</th>
       <td mat-cell *matCellDef="let element">
-        {{ element.requestID }}
+        {{ element.log }}
       </td>
     </ng-container>
 
     <!-- TaskID Column -->
-    <ng-container matColumnDef="taskID">
+    <ng-container matColumnDef="taskId">
       <th mat-header-cell *matHeaderCellDef>TaskID</th>
       <td mat-cell *matCellDef="let element">
         <a
-          [href]="'https://explorer.iex.ec/viviani/task/' + element.taskID"
+          [href]="'https://explorer.iex.ec/viviani/task/' + element.taskId"
           target="_blank"
           matTooltip="Explore task on iExec"
           matTooltipShowDelay="200"
           matTooltipHideDelay="1000"
-          >{{ element.taskID.substring(0, 16) }}...</a
+          *ngIf="element.taskId.length > 0"
+          >{{ element.taskId.substring(0, 16) }}...</a
         >
-      </td>
-    </ng-container>
-
-    <!-- Result Column -->
-    <ng-container matColumnDef="result">
-      <th mat-header-cell *matHeaderCellDef>Result</th>
-      <td mat-cell *matCellDef="let element">
-        {{ element.result }}
+        <span *ngIf="element.taskId.length === 0" style="font-style: italic"
+          >(no task)</span
+        >
       </td>
     </ng-container>
 
@@ -65,7 +61,7 @@
   </div>
 
   <mat-paginator
-    [length]="dataSource.getLength()"
+    [length]="dataLength"
     [pageSize]="5"
     [pageSizeOptions]="[5, 10, 20]"
     showFirstLastButtons
