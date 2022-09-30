@@ -19,11 +19,11 @@ interface IQueryEvent {
 }
 
 @Component({
-  selector: 'app-query-list-table',
-  templateUrl: './query-list-table.component.html',
-  styleUrls: ['./query-list-table.component.css'],
+  selector: 'app-query-events-table',
+  templateUrl: './query-events-table.component.html',
+  styleUrls: ['./query-events-table.component.css'],
 })
-export class QueryListTableComponent implements AfterViewInit, OnDestroy {
+export class QueryEventsTableComponent implements AfterViewInit, OnDestroy {
   displayedColumns: string[] = ['blockNumber', 'txHash', 'taskId', 'log'];
 
   dataSource: MatTableDataSource<IQueryEvent>;

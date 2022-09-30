@@ -19,11 +19,11 @@ interface ITDDEvent {
 }
 
 @Component({
-  selector: 'app-tdd-events-list-table',
-  templateUrl: './tdd-events-list-table.component.html',
-  styleUrls: ['./tdd-events-list-table.component.css'],
+  selector: 'app-tdd-events-table',
+  templateUrl: './tdd-events-table.component.html',
+  styleUrls: ['./tdd-events-table.component.css'],
 })
-export class TddEventsListTableComponent implements AfterViewInit, OnDestroy {
+export class TddEventsTableComponent implements AfterViewInit, OnDestroy {
   displayedColumns: string[] = ['blockNumber', 'txHash', 'log', 'owner', 'url'];
 
   dataSource: MatTableDataSource<ITDDEvent>;
