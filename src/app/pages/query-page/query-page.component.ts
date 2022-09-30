@@ -55,6 +55,7 @@ export class QueryPageComponent implements OnInit {
   completed = false;
   displayedColumns: string[] = ['property', 'value', 'unit', 'time'];
   resultTable: IResultTable[] = defaultIResultTable();
+  start = 0;
 
   propertyFormGroup: FormGroup = this._fb.group({
     // propertyIRI: ['', [Validators.required, this.validIRIValidator()]],
@@ -78,6 +79,8 @@ export class QueryPageComponent implements OnInit {
     },
     { validators: this.maxGreaterThanMin }
   );
+
+  stepperIndex = 0;
   prefixesFormArray: FormArray = this._fb.array([]);
   prefixNames: string[] = [];
 
@@ -141,7 +144,7 @@ export class QueryPageComponent implements OnInit {
   }
 
   async submitQuery() {
-    const start: number = this.now();
+    this.start = this.now();
     this.result.loading = true;
     this.resultTable = defaultIResultTable();
     this.query = defaultIQuery();
@@ -216,22 +219,55 @@ export class QueryPageComponent implements OnInit {
     */
     console.log(this.query);
 
+    await this.computeQuery();
+  }
+
+  private async computeQuery() {
+    this.desmold.desmo.queryState.subscribe((state) => {
+      if (state.state === 'TASK_UPDATED') {
+        this.notifySentTransaction('The task is processing...');
+      }
+      if (state.state === 'TASK_COMPLETED') {
+        this.stepperIndex = 3;
+        this.notifySentTransaction('The task is completed');
+      }
+      if (state.state === 'TASK_FAILED') {
+        this.stepperIndex = 0;
+        this.notifySentTransaction('The task has failed');
+      }
+      if (state.state === 'TASK_TIMEDOUT') {
+        this.stepperIndex = 0;
+        this.notifySentTransaction('The task took too long to complete');
+      }
+    });
+
+    this.stepperIndex = 0;
     const eventPromise = firstValueFrom(this.desmold.desmoHub.requestID$);
     await this.desmold.desmoHub.getNewRequestID();
     const event = await eventPromise;
+    this.result.requestId = event.requestID;
     this.notifySentTransaction('new request ID received');
 
+    this.stepperIndex = 1;
     const queryToSend: string = this.queryToSend(this.query);
     await this.desmold.desmo.buyQuery(
-      event.requestID,
+      this.result.requestId,
       queryToSend,
       environment.iExecDAppAddress
     );
     this.notifySentTransaction('Query successfully sent');
+
+    this.stepperIndex = 2;
     const { result, type } = await this.desmold.desmo.getQueryResult();
+    if (this.stepperIndex === 0) {
+      this.notifySentTransaction('Query failed');
+      this.resultReset();
+      return;
+    }
     this.notifySentTransaction('Query result received');
-    const elapsedTime = this.elapsed(start);
+    const elapsedTime = this.elapsed(this.start);
     this.queryCompleted(result, type, elapsedTime);
+    this.stepperIndex = 4;
   }
 
   resetQueryBuilder(stepperObject: MatStepper) {

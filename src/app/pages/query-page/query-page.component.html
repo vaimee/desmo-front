@@ -337,6 +337,40 @@
         *ngIf="this.result.loading"
       ></mat-progress-bar
     ></mat-card-footer>
+
+    <mat-stepper linear [selectedIndex]="stepperIndex" #result_stepper>
+      <mat-step>
+        <ng-template matStepperIcon="edit">
+          <mat-icon>done</mat-icon>
+        </ng-template>
+        <ng-template matStepLabel>Requesting Id</ng-template>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepperIcon="edit">
+          <mat-icon>done</mat-icon>
+        </ng-template>
+        <ng-template matStepLabel>Buying query</ng-template>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepperIcon="edit">
+          <mat-icon>done</mat-icon>
+        </ng-template>
+        <ng-template matStepLabel>Executing Query</ng-template>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepperIcon="edit">
+          <mat-icon>done</mat-icon>
+        </ng-template>
+        <ng-template matStepLabel>Retrieving Result</ng-template>
+      </mat-step>
+      <ng-template matStepperIcon="edit">
+        <mat-icon>done</mat-icon>
+      </ng-template>
+      <mat-step>
+        <ng-template matStepLabel>Done</ng-template>
+      </mat-step>
+    </mat-stepper>
+
     <mat-card-content *ngIf="this.result.arrived">
       <h2>Query Result</h2>
       <div *ngIf="this.result.error">
