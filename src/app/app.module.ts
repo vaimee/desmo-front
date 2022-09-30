@@ -39,9 +39,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
 import { TddListTableComponent } from './components/tdd-list-table/tdd-list-table.component';
 import { QueryListTableComponent } from './components/query-list-table/query-list-table.component';
-import { TddCreatedListTableComponent } from './components/tdd-created-list-table/tdd-created-list-table.component';
-import { TddEnabledListTableComponent } from './components/tdd-enabled-list-table/tdd-enabled-list-table.component';
-import { TddDisabledListTableComponent } from './components/tdd-disabled-list-table/tdd-disabled-list-table.component';
 import { QueryPipe } from './pipes/query/query.pipe';
 import { TddEventsListTableComponent } from './components/tdd-events-list-table/tdd-events-list-table.component';
 
@@ -60,9 +57,6 @@ const mapboxToken =
     TransactionViewerComponent,
     TddListTableComponent,
     QueryListTableComponent,
-    TddCreatedListTableComponent,
-    TddEnabledListTableComponent,
-    TddDisabledListTableComponent,
     QueryPipe,
     TddEventsListTableComponent,
   ],
