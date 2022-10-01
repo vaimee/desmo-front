@@ -1,4 +1,8 @@
-<app-query-form (querySubmitted)="executeQuery($event)"></app-query-form>
+<app-query-form
+  *ngIf="!this.result.loading"
+  (querySubmitted)="executeQuery($event)"
+></app-query-form>
+
 <div class="grid-container">
   <mat-card *ngIf="this.result.arrived || this.result.loading">
     <mat-card-footer>
@@ -13,7 +17,7 @@
         <ng-template matStepperIcon="edit">
           <mat-icon>done</mat-icon>
         </ng-template>
-        <ng-template matStepLabel>Requesting Id</ng-template>
+        <ng-template matStepLabel>Requesting ID</ng-template>
       </mat-step>
       <mat-step>
         <ng-template matStepperIcon="edit">
@@ -25,13 +29,13 @@
         <ng-template matStepperIcon="edit">
           <mat-icon>done</mat-icon>
         </ng-template>
-        <ng-template matStepLabel>Executing Query</ng-template>
+        <ng-template matStepLabel>Executing query</ng-template>
       </mat-step>
       <mat-step>
         <ng-template matStepperIcon="edit">
           <mat-icon>done</mat-icon>
         </ng-template>
-        <ng-template matStepLabel>Retrieving Result</ng-template>
+        <ng-template matStepLabel>Retrieving result</ng-template>
       </mat-step>
       <ng-template matStepperIcon="edit">
         <mat-icon>done</mat-icon>
