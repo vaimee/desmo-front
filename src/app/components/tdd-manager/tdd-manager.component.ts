@@ -140,7 +140,7 @@ export class TddManagerComponent implements OnInit, OnDestroy {
     });
   }
 
-  async getTDD(): Promise<void> {
+  private async getTDD(): Promise<void> {
     let retrievedTDD: ITDD;
     try {
       retrievedTDD = await this.desmold.desmoHub.getTDD();

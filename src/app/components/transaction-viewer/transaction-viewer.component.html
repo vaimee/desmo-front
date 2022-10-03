@@ -1,6 +1,6 @@
 <mat-card class="dashboard-card mat-elevation-z6">
   <mat-card-header>
-    <mat-card-title> Transactions list</mat-card-title>
+    <mat-card-title> Your transactions history </mat-card-title>
   </mat-card-header>
   <mat-divider inset></mat-divider>
   <mat-card-content class="card-content">
@@ -44,6 +44,16 @@
             {{ element.sent | date: 'short' }}
           </td>
         </ng-container>
+
+        <!-- Row shown when there is no matching data. -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="3">
+            <span style="font-style: italic">
+              Transactions history for the currently-selected account is
+              empty.</span
+            >
+          </td>
+        </tr>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
