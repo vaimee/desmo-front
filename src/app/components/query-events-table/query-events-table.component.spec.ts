@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { QueryListTableComponent } from './query-list-table.component';
+import { QueryEventsTableComponent } from './query-events-table.component';
 
-describe('QueryListTableComponent', () => {
-  let component: QueryListTableComponent;
-  let fixture: ComponentFixture<QueryListTableComponent>;
+describe('QueryEventsTableComponent', () => {
+  let component: QueryEventsTableComponent;
+  let fixture: ComponentFixture<QueryEventsTableComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [QueryListTableComponent],
+      declarations: [QueryEventsTableComponent],
     }).compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(QueryListTableComponent);
+    fixture = TestBed.createComponent(QueryEventsTableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

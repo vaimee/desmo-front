@@ -38,11 +38,9 @@ import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.serv
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatTreeModule } from '@angular/material/tree';
 import { TddListTableComponent } from './components/tdd-list-table/tdd-list-table.component';
-import { QueryListTableComponent } from './components/query-list-table/query-list-table.component';
-import { TddCreatedListTableComponent } from './components/tdd-created-list-table/tdd-created-list-table.component';
-import { TddEnabledListTableComponent } from './components/tdd-enabled-list-table/tdd-enabled-list-table.component';
-import { TddDisabledListTableComponent } from './components/tdd-disabled-list-table/tdd-disabled-list-table.component';
+import { QueryEventsTableComponent } from './components/query-events-table/query-events-table.component';
 import { QueryPipe } from './pipes/query/query.pipe';
+import { TddEventsTableComponent } from './components/tdd-events-table/tdd-events-table.component';
 
 const mapboxToken =
   'pk.eyJ1IjoiaW9zb25vcGVyc2lhIiwiYSI6ImNsNjBzYjVldjAwNWszaW1rNWZtdTRuNjkifQ.2lGOSvqt5lahEfZYLa3eRg';
@@ -58,11 +56,9 @@ const mapboxToken =
     TddManagerComponent,
     TransactionViewerComponent,
     TddListTableComponent,
-    QueryListTableComponent,
-    TddCreatedListTableComponent,
-    TddEnabledListTableComponent,
-    TddDisabledListTableComponent,
+    QueryEventsTableComponent,
     QueryPipe,
+    TddEventsTableComponent,
   ],
   imports: [
     BrowserModule,
