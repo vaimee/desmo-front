@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
@@ -23,7 +24,9 @@ interface IQueryEvent {
   templateUrl: './query-events-table.component.html',
   styleUrls: ['./query-events-table.component.css'],
 })
-export class QueryEventsTableComponent implements AfterViewInit, OnDestroy {
+export class QueryEventsTableComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   displayedColumns: string[] = ['blockNumber', 'txHash', 'taskId', 'log'];
 
   dataSource: MatTableDataSource<IQueryEvent>;
@@ -41,6 +44,10 @@ export class QueryEventsTableComponent implements AfterViewInit, OnDestroy {
   ) {
     this.dataSource = new MatTableDataSource<IQueryEvent>(this.txList);
     this.subscriptions = new Subscription();
+  }
+
+  async ngOnInit() {
+    await this.desmold.isReady;
   }
 
   async ngAfterViewInit() {
@@ -65,7 +72,7 @@ export class QueryEventsTableComponent implements AfterViewInit, OnDestroy {
   }
 
   private async getAllCompletedQueries(): Promise<void> {
-    const contract = this.desmold.desmoContract['contract'];
+    const contract = this.desmold.desmo['contract'];
     const queryFilter = contract.filters.QueryCompleted();
     const events = await contract.queryFilter(queryFilter);
     const queryCompletedEvents = events.map((event: any) => {

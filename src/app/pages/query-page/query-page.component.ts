@@ -1,5 +1,5 @@
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import IQuery, {
   RequestedDataType,
   defaultIQuery,
@@ -49,7 +49,7 @@ const drawPolygon: MapboxDraw = new MapboxDraw({
   templateUrl: './query-page.component.html',
   styleUrls: ['./query-page.component.css'],
 })
-export class QueryPageComponent {
+export class QueryPageComponent implements OnInit {
   query: IQuery = defaultIQuery();
   result: IResult = defaultIResult();
   completed = false;
@@ -87,6 +87,14 @@ export class QueryPageComponent {
     private snackBar: MatSnackBar
   ) {}
 
+  async ngOnInit(): Promise<void> {
+    await this.desmold.isReady;
+
+    if (!this.desmold.desmoHub.isListening) {
+      await this.desmold.desmoHub.startListeners();
+    }
+  }
+
   onFilterMapLoad(map: MapboxMap): void {
     filterMap = map;
     map.addControl(drawPolygon);
@@ -96,8 +104,9 @@ export class QueryPageComponent {
         if (data.features.length > 1) {
           alert('ERROR: you cannot create more than one polygon!');
           for (let i = 1; i < data.features.length; ++i) {
-            if (data.features[i].id !== undefined) {
-              drawPolygon.delete(data.features[i].id!.toString());
+            const identifier = data.features[i].id;
+            if (identifier !== undefined) {
+              drawPolygon.delete(identifier.toString());
             }
           }
         }
@@ -207,21 +216,19 @@ export class QueryPageComponent {
     */
     console.log(this.query);
 
-    this.desmold.connect();
-
     const eventPromise = firstValueFrom(this.desmold.desmoHub.requestID$);
     await this.desmold.desmoHub.getNewRequestID();
     const event = await eventPromise;
     this.notifySentTransaction('new request ID received');
 
     const queryToSend: string = this.queryToSend(this.query);
-    await this.desmold.desmoContract.buyQuery(
+    await this.desmold.desmo.buyQuery(
       event.requestID,
       queryToSend,
       environment.iExecDAppAddress
     );
     this.notifySentTransaction('Query successfully sent');
-    const { result, type } = await this.desmold.desmoContract.getQueryResult();
+    const { result, type } = await this.desmold.desmo.getQueryResult();
     this.notifySentTransaction('Query result received');
     const elapsedTime = this.elapsed(start);
     this.queryCompleted(result, type, elapsedTime);

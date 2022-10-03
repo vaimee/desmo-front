@@ -13,3 +13,9 @@
 .card-content {
   margin: 10px;
 }
+
+.horizontalCenter {
+  position: relative;
+  left: 50%;
+  transform: translate(-50%, 0%);
+}
