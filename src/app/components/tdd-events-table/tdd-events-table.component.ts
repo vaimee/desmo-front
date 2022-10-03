@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   OnDestroy,
+  OnInit,
   ViewChild,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
@@ -23,7 +24,9 @@ interface ITDDEvent {
   templateUrl: './tdd-events-table.component.html',
   styleUrls: ['./tdd-events-table.component.css'],
 })
-export class TddEventsTableComponent implements AfterViewInit, OnDestroy {
+export class TddEventsTableComponent
+  implements OnInit, AfterViewInit, OnDestroy
+{
   displayedColumns: string[] = ['blockNumber', 'txHash', 'log', 'owner', 'url'];
 
   dataSource: MatTableDataSource<ITDDEvent>;
@@ -45,6 +48,10 @@ export class TddEventsTableComponent implements AfterViewInit, OnDestroy {
       data.owner.toLowerCase().indexOf(filter) !== -1 ||
       data.url.toLowerCase().indexOf(filter) !== -1;
     this.subscriptions = new Subscription();
+  }
+
+  async ngOnInit() {
+    await this.desmold.isReady;
   }
 
   async ngAfterViewInit() {
