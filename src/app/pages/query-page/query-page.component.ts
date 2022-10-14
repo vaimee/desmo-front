@@ -117,7 +117,7 @@ export class QueryPageComponent implements OnInit, OnDestroy {
       this.resetQueryState();
     }
 
-    if (this.queryStateDict[this.currentUserAddress].executing === true) {
+    if (this.queryStateDict[this.currentUserAddress].checkPoint >= 0) {
       const dialogRef = this.dialog.open(QueryResumeDialogComponent, {
         disableClose: true,
         autoFocus: true,
@@ -134,7 +134,7 @@ export class QueryPageComponent implements OnInit, OnDestroy {
   }
 
   public async executeQuery(query: IQuery): Promise<void> {
-    if (this.queryStateDict[this.currentUserAddress].executing === true) {
+    if (this.queryStateDict[this.currentUserAddress].checkPoint >= 0) {
       throw new Error(
         "Cannot execute query until the current one isn't finished."
       );
@@ -143,18 +143,35 @@ export class QueryPageComponent implements OnInit, OnDestroy {
     this.result.loading = true;
     this.resultTable = defaultIResultTable();
 
-    const requestID: Bytes = await this.executeFirstPhase();
-    this.saveFirstCheckPoint(query, requestID);
+    // Reset the query state for the currently-selected user
+    // and save checkPoint "zero":
+    this.resetQueryState();
+    this.saveCheckPointZero(query);
 
+    // Execute the first phase of the query execution process
+    // and save checkPoint "one":
+    const requestID: Bytes = await this.executeFirstPhase();
+    this.saveCheckPointOne(requestID);
+
+    // Execute the second phase of the query execution process
+    // and terminate:
     await this.executeSecondPhase(query, requestID);
 
     this.result.loading = false;
   }
 
-  private saveFirstCheckPoint(query: IQuery, requestID: Bytes) {
+  private saveCheckPointZero(query: IQuery) {
+    this.queryStateDict[this.currentUserAddress].executing = false;
+    this.queryStateDict[this.currentUserAddress].checkPoint = 0;
+    this.queryStateDict[this.currentUserAddress].query = query;
+
+    // Persist the current state:
+    localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.queryStateDict));
+  }
+
+  private saveCheckPointOne(requestID: Bytes) {
     this.queryStateDict[this.currentUserAddress].executing = true;
     this.queryStateDict[this.currentUserAddress].checkPoint = 1;
-    this.queryStateDict[this.currentUserAddress].query = query;
     this.queryStateDict[this.currentUserAddress].requestID = requestID;
 
     // Persist the current state:
@@ -162,33 +179,55 @@ export class QueryPageComponent implements OnInit, OnDestroy {
   }
 
   private async continueQueryExecution() {
-    if (this.queryStateDict[this.currentUserAddress].checkPoint === 0) {
+    const cachedCheckPoint =
+      this.queryStateDict[this.currentUserAddress].checkPoint;
+
+    // We must ensure that the checkPoint is >= 0:
+    if (cachedCheckPoint < 0) {
       throw new Error(
         "Cannot continue executing a query that didn't even start."
       );
-    } else if (this.queryStateDict[this.currentUserAddress].checkPoint === 1) {
-      const curUserQuery = this.queryStateDict[this.currentUserAddress].query;
-      const curUserRequestID =
-        this.queryStateDict[this.currentUserAddress].requestID;
-      if (curUserQuery === undefined || curUserRequestID === undefined) {
-        throw new Error(
-          'Invalid query state: query or requestID missing at first checkpoint.'
-        );
-      }
-      const query: IQuery = curUserQuery;
-      const requestID: Bytes = curUserRequestID;
-
-      this.result.loading = true;
-      this.resultTable = defaultIResultTable();
-
-      this.stepperIndex = 0;
-      // Apparently, this is needed otherwise the previous line has no visual effect:
-      this.cd.detectChanges();
-
-      await this.executeSecondPhase(query, requestID);
-
-      this.result.loading = false;
     }
+
+    // Update the view to show the query execution UI:
+    this.result.loading = true;
+    this.resultTable = defaultIResultTable();
+    this.stepperIndex = 0;
+    this.cd.detectChanges(); // This is needed to make sure the previous lines have a graphical effect
+
+    // If the checkPoint is >= 0, than we're sure that a query was cached:
+    const query = this.queryStateDict[this.currentUserAddress].query;
+
+    // The query must be defined at this stage:
+    if (query === undefined) {
+      throw new Error(
+        'Invalid query state: missing query at checkpoint "zero".'
+      );
+    }
+
+    // Now we need the requestID:
+    let requestID: Bytes | undefined;
+    if (cachedCheckPoint === 0) {
+      // Execute the first phase and save checkPoint "one":
+      requestID = await this.executeFirstPhase();
+      this.saveCheckPointOne(requestID);
+    } else if (cachedCheckPoint === 1) {
+      // If the checkPoint is === 1, than we're sure that a requestID was cached:
+      requestID = this.queryStateDict[this.currentUserAddress].requestID;
+    }
+
+    // The requestID must be defined at this stage:
+    if (requestID === undefined) {
+      throw new Error(
+        'Invalid query state: missing requestID at checkpoint "one".'
+      );
+    }
+
+    // Execute the second phase:
+    await this.executeSecondPhase(query, requestID);
+
+    // Update the view:
+    this.result.loading = false;
   }
 
   private async executeFirstPhase(): Promise<Bytes> {
@@ -257,7 +296,7 @@ export class QueryPageComponent implements OnInit, OnDestroy {
   private resetQueryState() {
     const initialQueryState: IQueryState = {
       executing: false,
-      checkPoint: 0,
+      checkPoint: -1,
     };
     this.queryStateDict[this.currentUserAddress] = initialQueryState;
 
