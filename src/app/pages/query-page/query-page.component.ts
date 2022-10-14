@@ -38,10 +38,8 @@ export class QueryPageComponent implements OnInit {
   stepperIndex = 0;
 
   private subscriptions: Subscription;
-  private queryState: IQueryState = {
-    executing: false,
-    checkPoint: 0,
-  };
+  private queryStateDict: Record<string, IQueryState>;
+  private currentUserAddress = '';
   private readonly CACHE_KEY = 'queryState';
 
   constructor(
@@ -54,14 +52,12 @@ export class QueryPageComponent implements OnInit {
     this.resultTable = defaultIResultTable();
     this.subscriptions = new Subscription();
 
-    const cachedValue = localStorage.getItem(this.CACHE_KEY);
-    if (cachedValue === null) {
-      // Cache miss
-      this.resetQueryState();
-    } else {
-      // Cache hit
-      this.queryState = JSON.parse(cachedValue) as IQueryState;
-    }
+    // Check the cache for pre-existing data or initialise with an empty object:
+    const cachedValueStr: string = localStorage.getItem(this.CACHE_KEY) ?? '{}';
+    this.queryStateDict = JSON.parse(cachedValueStr) as Record<
+      string,
+      IQueryState
+    >;
   }
 
   public async ngOnInit(): Promise<void> {
@@ -70,6 +66,23 @@ export class QueryPageComponent implements OnInit {
     if (!this.desmold.desmoHub.isListening) {
       await this.desmold.desmoHub.startListeners();
     }
+
+    this.currentUserAddress = this.desmold.userAddress;
+
+    this.subscriptions.add(
+      this.desmold.accountsChanged.subscribe(async ({ newValue }) => {
+        if (this.result.loading === true) {
+          // User changed wallet during the execution of a query:
+          // the best thing to do is to force the page to reload
+          // so that every piece of code that is still running gets
+          // immediately stopped.
+          window.location.reload();
+        } else {
+          this.currentUserAddress = newValue;
+          await this.checkForUnfinishedQueryExecution();
+        }
+      })
+    );
 
     this.subscriptions.add(
       this.desmold.desmo.queryState.subscribe((state: any) => {
@@ -91,7 +104,20 @@ export class QueryPageComponent implements OnInit {
       })
     );
 
-    if (this.queryState.executing === true) {
+    // Before (potentially) starting a query execution process,
+    // we need to set all needed subscriptions. This is why
+    // the following line is the last one inside this function:
+    await this.checkForUnfinishedQueryExecution();
+  }
+
+  private async checkForUnfinishedQueryExecution(): Promise<void> {
+    if (this.queryStateDict[this.currentUserAddress] === undefined) {
+      // Initialize the query state data structure
+      // for the currently-selected user:
+      this.resetQueryState();
+    }
+
+    if (this.queryStateDict[this.currentUserAddress].executing === true) {
       const dialogRef = this.dialog.open(QueryResumeDialogComponent, {
         disableClose: true,
         autoFocus: true,
@@ -108,7 +134,7 @@ export class QueryPageComponent implements OnInit {
   }
 
   public async executeQuery(query: IQuery): Promise<void> {
-    if (this.queryState.executing === true) {
+    if (this.queryStateDict[this.currentUserAddress].executing === true) {
       throw new Error(
         "Cannot execute query until the current one isn't finished."
       );
@@ -126,31 +152,31 @@ export class QueryPageComponent implements OnInit {
   }
 
   private saveFirstCheckPoint(query: IQuery, requestID: Bytes) {
-    this.queryState.executing = true;
-    this.queryState.checkPoint = 1;
-    this.queryState.query = query;
-    this.queryState.requestID = requestID;
+    this.queryStateDict[this.currentUserAddress].executing = true;
+    this.queryStateDict[this.currentUserAddress].checkPoint = 1;
+    this.queryStateDict[this.currentUserAddress].query = query;
+    this.queryStateDict[this.currentUserAddress].requestID = requestID;
 
     // Persist the current state:
-    localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.queryState));
+    localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.queryStateDict));
   }
 
   private async continueQueryExecution() {
-    if (this.queryState.checkPoint === 0) {
+    if (this.queryStateDict[this.currentUserAddress].checkPoint === 0) {
       throw new Error(
         "Cannot continue executing a query that didn't even start."
       );
-    } else if (this.queryState.checkPoint === 1) {
-      if (
-        this.queryState.query === undefined ||
-        this.queryState.requestID === undefined
-      ) {
+    } else if (this.queryStateDict[this.currentUserAddress].checkPoint === 1) {
+      const curUserQuery = this.queryStateDict[this.currentUserAddress].query;
+      const curUserRequestID =
+        this.queryStateDict[this.currentUserAddress].requestID;
+      if (curUserQuery === undefined || curUserRequestID === undefined) {
         throw new Error(
           'Invalid query state: query or requestID missing at first checkpoint.'
         );
       }
-      const query: IQuery = this.queryState.query;
-      const requestID: Bytes = this.queryState.requestID;
+      const query: IQuery = curUserQuery;
+      const requestID: Bytes = curUserRequestID;
 
       this.result.loading = true;
       this.resultTable = defaultIResultTable();
@@ -191,8 +217,7 @@ export class QueryPageComponent implements OnInit {
 
     this.stepperIndex = 2;
     try {
-      const { result, type } =
-        await this.desmold.desmo.getQueryResult();
+      const { result, type } = await this.desmold.desmo.getQueryResult();
 
       this.notifySentTransaction('Query result received.');
       const elapsedTime = this.elapsed(this.start);
@@ -234,10 +259,10 @@ export class QueryPageComponent implements OnInit {
       executing: false,
       checkPoint: 0,
     };
-    this.queryState = initialQueryState;
+    this.queryStateDict[this.currentUserAddress] = initialQueryState;
 
     // Persist the current state:
-    localStorage.setItem(this.CACHE_KEY, JSON.stringify(initialQueryState));
+    localStorage.setItem(this.CACHE_KEY, JSON.stringify(this.queryStateDict));
   }
 
   private resultReset(): void {
