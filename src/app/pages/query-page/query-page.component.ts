@@ -1,5 +1,5 @@
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import IQuery from 'src/app/interface/IQuery';
 import { Subscription, firstValueFrom } from 'rxjs';
 import { environment } from 'src/environments/environment';
@@ -28,7 +28,7 @@ interface IQueryState {
   templateUrl: './query-page.component.html',
   styleUrls: ['./query-page.component.css'],
 })
-export class QueryPageComponent implements OnInit {
+export class QueryPageComponent implements OnInit, OnDestroy {
   result: IResult;
 
   displayedColumns: string[] = ['property', 'value', 'unit', 'time'];
@@ -292,5 +292,9 @@ export class QueryPageComponent implements OnInit {
     this.snackBar.open(message, 'Dismiss', {
       duration: 1000,
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
