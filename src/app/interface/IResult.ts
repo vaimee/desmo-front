@@ -1,3 +1,4 @@
+import { Bytes } from 'ethers';
 import IQuery, { defaultIQuery } from './IQuery';
 
 export enum QueryResultTypes {
@@ -19,6 +20,7 @@ export interface IResult {
   data: IResultData;
   elapsedTime: number;
   query: IQuery;
+  requestId: Bytes;
 }
 
 interface IResultData {
@@ -38,6 +40,7 @@ export function defaultIResult(): IResult {
     },
     elapsedTime: 0,
     query: defaultIQuery(),
+    requestId: [0],
   };
 }
 

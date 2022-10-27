@@ -2,42 +2,12 @@
   margin: 20px;
 }
 
-.dashboard-card {
-  position: absolute;
-  top: 15px;
-  left: 15px;
-  right: 15px;
-  bottom: 15px;
-}
-
-.add-button {
-  margin: 20px;
-}
-
-.more-button {
-  position: absolute;
-  top: 5px;
-  right: 10px;
-}
-
-.dashboard-card-content {
-  text-align: center;
-}
-
-mgl-map {
-  width: 40vh;
-  height: 25vh;
-  min-width: 250px;
-  min-height: 155px;
-  margin-top: 10px;
-}
-
-.margin-right {
-  margin-right: 12px;
-}
-
 table.mat-table {
   top: 10px;
   display: table;
   width: 100%;
+}
+
+::ng-deep .mat-horizontal-stepper-header{
+  pointer-events: none !important;
 }
