@@ -21,7 +21,7 @@ export class TDDDataSource implements DataSource<TDD> {
   public error$ = this.errorSubject.asObservable();
 
   constructor() {
-    const walletSigner = new WalletSignerJsonRpc('https://viviani.iex.ec');
+    const walletSigner = new WalletSignerJsonRpc('https://bellecour.iex.ec');
     this.desmoHub = new DesmoHub(walletSigner);
   }
 

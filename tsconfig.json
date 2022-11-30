@@ -41,7 +41,19 @@
       ],
       "process":[
         "./node_modules/process/browser.js",
-      ]
+      ],
+      "url": [
+        "./node_modules/url",
+      ],
+      "zlib": [
+        "./node_modules/browserify-zlib",
+      ],
+      "https": [
+        "./node_modules/https-browserify",
+      ],
+      "http": [
+        "./node_modules/stream-http",
+      ],
     }
   },
   "angularCompilerOptions": {

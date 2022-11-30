@@ -1,7 +1,7 @@
 import { DesmoldSDKService } from 'src/app/services/desmold-sdk/desmold-sdk.service';
 import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import IQuery from 'src/app/interface/IQuery';
-import { Subscription, firstValueFrom } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import {
   IResult,
@@ -11,7 +11,7 @@ import {
   defaultIResultTable,
 } from 'src/app/interface/IResult';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { Bytes } from 'ethers';
+import { Bytes, utils } from 'ethers';
 import { MatDialog } from '@angular/material/dialog';
 import { QueryResumeDialogComponent } from 'src/app/components/query-resume-dialog/query-resume-dialog.component';
 
@@ -232,13 +232,11 @@ export class QueryPageComponent implements OnInit, OnDestroy {
 
   private async executeFirstPhase(): Promise<Bytes> {
     this.stepperIndex = 0;
-    const eventPromise = firstValueFrom(this.desmold.desmoHub.requestID$);
-    await this.desmold.desmoHub.getNewRequestID();
-    const event = await eventPromise;
-    this.result.requestId = event.requestID;
+    this.result.requestId = utils.arrayify(
+      utils.hexlify(await this.desmold.desmo.generateNewRequestID())
+    );
     this.notifySentTransaction('New request ID obtained.');
-
-    return event.requestID;
+    return this.result.requestId;
   }
 
   private async executeSecondPhase(
@@ -246,10 +244,11 @@ export class QueryPageComponent implements OnInit, OnDestroy {
     requestID: Bytes
   ): Promise<void> {
     this.stepperIndex = 1;
-    const queryToSend: string = this.encodeQuery(query);
     await this.desmold.desmo.buyQuery(
-      requestID,
-      queryToSend,
+      utils.hexlify(requestID),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      query,
       environment.iExecDAppAddress
     );
     this.notifySentTransaction('Query successfully sent.');

@@ -118,7 +118,7 @@ export class DesmoldSDKService implements OnDestroy {
       const chainId: string = await this._ethProvider.request({
         method: 'eth_chainId',
       });
-      this._isVivianiChain = chainId === '0x85';
+      this._isVivianiChain = chainId === '0x86';
 
       // Initialize SDK interfaces:
       this._walletSigner = new WalletSignerMetamask(this._ethProvider);
@@ -174,7 +174,7 @@ export class DesmoldSDKService implements OnDestroy {
   public async switchToVivianiChain(): Promise<void> {
     await this._ethProvider.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: '0x85' }],
+      params: [{ chainId: '0x86' }],
     });
   }
 
@@ -183,10 +183,10 @@ export class DesmoldSDKService implements OnDestroy {
       method: 'wallet_addEthereumChain',
       params: [
         {
-          chainId: '0x85',
-          chainName: 'Viviani',
-          rpcUrls: ['https://viviani.iex.ec'],
-          blockExplorerUrls: ['https://blockscout-viviani.iex.ec/'],
+          chainId: '0x86',
+          chainName: 'bellecour',
+          rpcUrls: ['https://bellecour.iex.ec'],
+          blockExplorerUrls: ['https://blockscout-bellecour.iex.ec/'],
           nativeCurrency: {
             symbol: 'RLC',
             decimals: 18,
